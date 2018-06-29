@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_index"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/bg_gray"
+        android:gravity="center"
+        android:text="1"
+        android:textSize="@dimen/sp_14" />
+
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="10dp"
+        android:text="蚌埠市龙湖区望岗镇"
+        android:textColor="@color/blue_address"
+        android:textSize="@dimen/sp_16" />
+
+    <TextView
+        android:id="@+id/tv_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/tv_address"
+        android:text="-32"
+        android:textColor="@color/red_btn_bg"
+        android:textSize="@dimen/sp_16" />
+
+    <TextView
+        android:id="@+id/tv_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:paddingRight="20dp"
+        android:text="@string/civilization_creation"
+        android:textColor="@color/civilization_creation"
+        android:textSize="@dimen/sp_14" />
+
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_address"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="40dp"
+        android:paddingTop="10dp"
+        android:text="曹孟德"
+        android:textColor="@color/txt_sub"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_name"
+        android:layout_toRightOf="@id/tv_name"
+        android:paddingLeft="20dp"
+        android:text="2018年6月18日 11:39"
+        android:textColor="@color/txt_sub"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/tv_name"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:paddingRight="20dp"
+        android:text="未完成"
+        android:textColor="@color/civilization_creation"
+        android:textSize="@dimen/sp_14" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/tv_name"
+        android:background="@color/divider_task_list" />
+
+
+</RelativeLayout>

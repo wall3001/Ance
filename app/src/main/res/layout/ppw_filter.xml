@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_gray"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_all"
+        style="@style/filter"
+        android:text="@string/all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/divider1"
+        android:background="@color/divider_task_list"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+    <TextView
+        android:id="@+id/tv_unStart"
+        style="@style/filter"
+        android:text="@string/un_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/divider2"
+        android:background="@color/divider_task_list"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+    <TextView
+        android:id="@+id/tv_doing"
+        style="@style/filter"
+        android:text="@string/doing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/divider3"
+        android:background="@color/divider_task_list"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+    <TextView
+        android:id="@+id/tv_complete"
+        style="@style/filter"
+        android:text="@string/has_complete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/divider4"
+        android:background="@color/divider_task_list"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+
+</LinearLayout>

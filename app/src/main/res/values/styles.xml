@@ -1,0 +1,150 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/theme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:windowAnimationStyle">@style/Animation_Activity</item>
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
+    </style>
+
+    <!-- Splash页主题 -->
+    <style name="FullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:screenOrientation">portrait</item>
+    </style>
+
+    <style name="Animation_Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/translate_right_to_center</item>
+        <item name="android:activityOpenExitAnimation">@anim/translate_center_to_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/translate_left_to_center</item>
+        <item name="android:activityCloseExitAnimation">@anim/translate_center_to_right</item>
+    </style>
+
+    <!--登录页输入框样式-->
+    <style name="edit_login">
+        <item name="android:background">@drawable/bg_edit_transparent</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/txt_main</item>
+        <item name="android:textColorHint">@color/txt_hint</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:maxLength">20</item>
+    </style>
+
+    <!--登录按钮样式-->
+    <style name="login_btn">
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:background">@drawable/selector_btn</item>
+        <item name="android:textColor">@drawable/selector_txt</item>
+        <item name="android:textSize">@dimen/sp_18</item>
+    </style>
+
+    <style name="left_title_sub">
+
+        <item name="android:textColor">@color/txt_sub</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+
+    </style>
+
+    <!--退出登录按钮样式-->
+    <style name="btn_logout">
+        <item name="android:textSize">@dimen/sp_18</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/selector_btn_logout</item>
+    </style>
+
+    <style name="filter">
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="title_left_score">
+        <item name="android:textColor">@color/txt_sub</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+    </style>
+
+    <style name="content_score">
+        <item name="android:textColor">@color/txt_main</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <!--评分项列表的子项名称-->
+    <style name="item_name">
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/txt_main</item>
+        <item name="android:padding">@dimen/dp_10</item>
+    </style>
+
+    <!--评分项列表的子项扣分-->
+    <style name="item_score">
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/red_btn_bg</item>
+        <item name="android:padding">@dimen/dp_10</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+    <!--评分项子项概要-->
+    <style name="item_summary">
+        <item name="android:textSize">@dimen/sp_13</item>
+        <item name="android:textColor">@color/txt_sub</item>
+        <item name="android:paddingLeft">@dimen/dp_10</item>
+    </style>
+
+    <!--保存评分项目按钮-->
+    <style name="btn_save">
+        <item name="android:textSize">@dimen/sp_18</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/selector_btn_save</item>
+    </style>
+
+    <style name="title_left_score_item" parent="title_left_score">
+        <item name="android:gravity">center|left</item>
+    </style>
+
+    <!--评分项右侧-->
+    <style name="img_right_score">
+        <item name="android:src">@drawable/ic_right</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <!--评分项内容-->
+    <style name="content_score_align_left" parent="content_score">
+        <item name="android:gravity">center|left</item>
+        <item name="android:padding">@dimen/dp_10</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="tv_right_score" parent="img_right_score">
+        <item name="android:textColor">@color/red_btn_bg</item>
+        <item name="android:paddingRight">@dimen/dp_10</item>
+    </style>
+
+    <style name="loading_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/ppw_bg_loading</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!--hint颜色-->
+    <color name="txt_hint">#B9B9B9</color>
+
+
+</resources>

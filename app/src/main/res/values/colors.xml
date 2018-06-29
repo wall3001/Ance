@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/bg_dark</color>
+    <color name="colorPrimaryDark">@color/bg_dark</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#FFFFFF</color>
+    
+    <!--字体颜色-->
+    <!--主色-->
+    <color name="txt_main">#333333</color>
+    <!--辅助色-->
+    <color name="txt_sub">#999999</color>
+
+    <!--灰色背景-->
+    <color name="bg_gray">#f9f9f9</color>
+    <color name="theme">#1ABC9C</color>
+    <color name="bg_login_line">#e4e4e4</color>
+    <color name="theme_dark">#FF048F74</color>
+    <color name="txt_main_light">#FFAEABAB</color>
+    <color name="bg_dark">#464C5B</color>
+    <color name="divider_line">#797979</color>
+    <color name="red_btn_bg">#FF0033</color>
+    <color name="red_btn_bg_pressed">#FF0022</color>
+    <color name="blue_address">#003399</color>
+    <color name="civilization_creation">#336633</color>
+    <color name="divider_task_list">#cccccc</color>
+    <color name="green_past">#00cc66</color>
+    <color name="blue_save">#169BD5</color>
+    <color name="blue_save_press">#FF0573A3</color>
+    <color name="bg_ppw">#8b282727</color>
+    <color name="gray_line">#B3B3B3</color>
+    <color name="ppw_bg_loading">#dfdfdf</color>
+
+</resources>

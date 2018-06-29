@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="wall.field.investigation">
+    <!--用于读取扩展存储卡上的数据-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!--用于访问网络，网络定位需要上网-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--用于读取手机当前的状态-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!--用于写入缓存数据到扩展存储卡-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <!--用于申请获取蓝牙信息进行室内定位-->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <application
+        android:name="com.jess.arms.base.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!--
+        autolayout meta
+        配置设计图的宽高,配合AutoLauout控件使用,在设计图尺寸以外的其它尺寸手机上,也能达到和设计图一样的效果
+        注意: 本框架并不强制你使用 AutoLayout,如果你不想使用 AutoLayout,就不要配置下面的 meta-data
+        -->
+        <!-- <meta-data -->
+        <!-- android:name="design_width" -->
+        <!-- android:value="1080" /> -->
+        <!-- <meta-data -->
+        <!-- android:name="design_height" -->
+        <!-- android:value="1920" /> -->
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="81130ee6bda0c6059029432f1117ae68"/>
+        <service android:name="com.amap.api.location.APSService">
+
+        </service>
+        <!-- arms配置 -->
+        <meta-data
+            android:name="wall.field.investigation.app.GlobalConfiguration"
+            android:value="ConfigModule" />
+
+
+        <!-- 更新apk自动安装 -->
+        <receiver android:name="winnings.update.ApkInstallReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 7.0以上不能自动安装的处理 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="wall.field.investigation.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <activity android:name=".mvp.ui.activity.LoginActivity" />
+        <activity
+            android:name=".mvp.ui.activity.WelcomeActivity"
+            android:theme="@style/FullScreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".mvp.ui.activity.TaskListActivity"
+            android:launchMode="singleTop" />
+        <activity android:name=".mvp.ui.activity.UserCenterActivity" />
+        <activity android:name=".mvp.ui.activity.ChangePasswordActivity" />
+        <activity android:name=".mvp.ui.activity.ScoreListActivity" />
+        <activity android:name=".mvp.ui.activity.ScoreItemDetailActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            />
+        <activity android:name=".mvp.ui.activity.AmapActivity"/>
+
+    </application>
+
+</manifest>
