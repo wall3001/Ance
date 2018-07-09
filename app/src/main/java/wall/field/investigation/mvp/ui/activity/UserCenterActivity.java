@@ -1,5 +1,6 @@
 package wall.field.investigation.mvp.ui.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,6 +33,7 @@ import wall.field.investigation.mvp.contract.UserCenterContract;
 import wall.field.investigation.mvp.model.entity.User;
 import wall.field.investigation.mvp.presenter.UserCenterPresenter;
 import wall.field.investigation.mvp.ui.view.GlideCircleTransform;
+import wall.field.investigation.mvp.ui.view.LoadingDialog;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -69,13 +71,31 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
         Glide.with(this).load(UserUtils.getCurrentPortrait(getBaseContext())).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
     }
 
+    private Dialog loadingDialog;
+
     @Override
     public void showLoading() {
-
+        if (loadingDialog == null) {
+            loadingDialog = LoadingDialog.createLoadingDialog(this, "加载中");
+        }
+        loadingDialog.show();
     }
 
     @Override
     public void hideLoading() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
 
     }
 

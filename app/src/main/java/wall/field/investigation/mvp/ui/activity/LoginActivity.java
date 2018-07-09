@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -18,7 +20,6 @@ import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.utils.DeviceUtils;
-import com.jess.arms.widget.CustomPopupWindow;
 
 import java.text.SimpleDateFormat;
 
@@ -26,9 +27,12 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import timber.log.Timber;
 import wall.field.investigation.R;
+import wall.field.investigation.app.EventBusTags;
+import wall.field.investigation.app.utils.StorageUtils;
 import wall.field.investigation.di.component.DaggerLoginComponent;
 import wall.field.investigation.di.module.LoginModule;
 import wall.field.investigation.mvp.contract.LoginContract;
+import wall.field.investigation.mvp.model.entity.Name;
 import wall.field.investigation.mvp.model.entity.User;
 import wall.field.investigation.mvp.model.entity.Version;
 import wall.field.investigation.mvp.presenter.LoginPresenter;
@@ -57,6 +61,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     Button btnLogin;
     @BindView(R.id.tv_copyright)
     TextView tvCopyright;
+    @BindView(R.id.img_delete_name)
+    ImageView imgDeleteName;
+    @BindView(R.id.img_delete_pwd)
+    ImageView imgDeletePwd;
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -84,9 +92,42 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
             mPresenter.checkNewVersion();
         }
 
+        Name name = new StorageUtils<Name>(Name.class, getApplicationContext()).getItem();
+        if (name != null) {
+            editName.setText(name.name);
+            editPassword.setText(name.password);
+        }
+
+        addTextChangedListener(editName,imgDeleteName);
+        addTextChangedListener(editPassword,imgDeletePwd);
+    }
+
+    private void addTextChangedListener(EditText edit, ImageView img) {
+        edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!TextUtils.isEmpty(edit.getText().toString())){
+                    img.setVisibility(View.VISIBLE);
+                }else{
+                    img.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
 
     private Dialog loadingDialog;
+
     @Override
     public void showLoading() {
         if (loadingDialog == null) {
@@ -123,7 +164,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     private boolean show = false;
 
-    @OnClick({R.id.img_show, R.id.btn_login})
+    @OnClick({R.id.img_show, R.id.btn_login,R.id.img_delete_name, R.id.img_delete_pwd})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_show:
@@ -144,6 +185,12 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                 } else {
                     showMessage("请输入用户名和密码");
                 }
+                break;
+            case R.id.img_delete_name:
+                editName.setText(null);
+                break;
+            case R.id.img_delete_pwd:
+                editPassword.setText(null);
                 break;
             default:
                 break;
@@ -170,16 +217,16 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         DeviceUtils.hideSoftKeyboard(this, editName);
         ShowNewVersion.getInstance().ShowNewVersion(this, version, editName, () -> {
             if (!TextUtils.isEmpty(version.url)) {
-                if(version.url.startsWith("http")|version.url.startsWith("Http")|version.url.startsWith("HTTP")){
+                if (version.url.startsWith("http") | version.url.startsWith("Http") | version.url.startsWith("HTTP")) {
                     UpdaterConfig config = new UpdaterConfig.Builder(this)
                             .setTitle(getResources().getString(R.string.app_name))
                             .setDescription(version.version)
-                            .setFileUrl(version.url.replaceAll("\\\\","/"))
+                            .setFileUrl(version.url.replaceAll("\\\\", "/"))
                             .setCanMediaScanner(true)
                             .build();
                     Updater.get().showLog(true).download(config);
-                    String s = version.url.replaceAll("\\\\","/");
-                    Timber.e("s=="+s);
+                    String s = version.url.replaceAll("\\\\", "/");
+                    Timber.e("s==" + s);
                 }
             }
         });
@@ -190,4 +237,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         super.onDestroy();
         ShowNewVersion.getInstance().release();
     }
+
+
 }

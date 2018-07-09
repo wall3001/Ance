@@ -45,7 +45,7 @@ public class ShowDelete {
     }
 
 
-    public void ShowDelete(Context ctx, View parentView, ShowDelete.CallBack callBack) {
+    public void ShowDelete(Context ctx, View parentView,String topTitle, ShowDelete.CallBack callBack) {
         customPopupWindow = CustomPopupWindow.builder().contentView(LayoutInflater.from(ctx).inflate(R.layout.ppw_delete, null))
                 .isWrap(false)
                 .isFocus(true)
@@ -56,7 +56,7 @@ public class ShowDelete {
                     TextView content = contentView.findViewById(R.id.tv_content);
                     TextView cancel = contentView.findViewById(R.id.tv_cancel);
                     TextView sure = contentView.findViewById(R.id.tv_sure);
-                    title.setText(ctx.getString(R.string.delete_score));
+                    title.setText(topTitle);
                     content.setText(ctx.getString(R.string.delete_score_tips));
                     cancel.setOnClickListener(v -> popupWindow.dismiss());
                     sure.setOnClickListener(v -> {

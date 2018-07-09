@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -94,6 +95,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     TextView tvAddress;
     @BindView(R.id.btn_save)
     Button btnSave;
+    @BindView(R.id.img_state)
+    ImageView imgState;
     private String taskId;
     private String scoreId;
     private String templateId;
@@ -117,6 +120,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     private ScoreDetail mScoreDetail;
 
     private TaskBaseInfo mTaskBaseInfo;
+
+    private String scoreName;
 
     private int deductNum = 0;
 
@@ -162,14 +167,22 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         taskId = getIntent().getStringExtra(EventBusTags.TASKID);
         scoreId = getIntent().getStringExtra(EventBusTags.SCOREID);
         templateId = getIntent().getStringExtra(EventBusTags.TEMPLATEID);
+        scoreName = getIntent().getStringExtra(EventBusTags.SCORERECORDITEMNAME);
+        //   String address = getIntent().getStringExtra(EventBusTags.ADDRESS);
+        //   tvTitle.setText(TextUtils.isEmpty(address) ? getString(R.string.score_record_item) : address);
         tvLocationContent.setFocusableInTouchMode(false);
         tvLocationContent.setOnClickListener(v -> {
             tvLocationContent.setFocusableInTouchMode(true);
         });
         if (isAdd) {
+            imgState.setImageResource(R.drawable.ic_new);
             tvTitle.setText(R.string.add_score_item);
             btnSave.setText(R.string.save);
         } else {
+            imgState.setImageResource(R.drawable.ic_complete);
+            if (!TextUtils.isEmpty(scoreName)) {
+                tvScoreName.setText(scoreName);
+            }
             tvTitle.setText(R.string.edit_score_item);
             tvRightTop.setText(R.string.delete);
             btnSave.setText(R.string.save_modify);
@@ -177,18 +190,15 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         //配置图片查看
         mRecyclerView.setAdapter(imageAdapter);
         //删除图片
-        imageAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+        imageAdapter.setOnItemClickListener((adapter, view, position) -> {
             LocalImage image = (LocalImage) adapter.getItem(position);
             if (image != null) {
-                if (!isAdd && image.isDownLoad) {
-                    //删除服务端的图片
-                    if (mPresenter != null) {
-                        mPresenter.deleteImage(taskId, scoreId, image, position);
-                    }
+                if (image.showDelete) {
+                    //删除照片
+                    deleteImage(image, position);
                 } else {
-                    //删除本地图片
-                    imageAdapter.remove(position);
-                    onSaveStateListener();
+                    //预览图片
+                    previewPicture(adapter.getData(), position);
                 }
             }
         });
@@ -211,6 +221,44 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             return true;
         });
 
+    }
+
+    //预览图片
+    private void previewPicture(List<LocalImage> data, int position) {
+
+        List<LocalMedia> medias = new ArrayList<>();
+        int j = data.size();
+        for (int i = 0; i < j; i++) {
+            LocalImage file = data.get(i);
+            if (file != null) {
+                LocalMedia media = new LocalMedia();
+                media.setPath(file.imgUrl);
+                media.setPosition(i);
+                media.setPictureType("image");
+                medias.add(media);
+            }
+        }
+        // PictureSelectionConfig.getInstance().themeStyleId
+        PictureSelector.create(getActivity()).themeStyle(R.style.picture).openExternalPreview(position, medias);
+
+    }
+
+    //删除照片
+    private void deleteImage(LocalImage image, int position) {
+        ShowDelete.getInstance().ShowDelete(getActivity(), mRecyclerView, "确定删除照片？", () -> {
+            if (image != null) {
+                if (!isAdd && image.isDownLoad) {
+                    //删除服务端的图片
+                    if (mPresenter != null) {
+                        mPresenter.deleteImage(taskId, scoreId, image, position);
+                    }
+                } else {
+                    //删除本地图片
+                    imageAdapter.remove(position);
+                    onSaveStateListener();
+                }
+            }
+        });
     }
 
     //监听文本状态
@@ -253,7 +301,31 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     && imageAdapter != null && imageAdapter.getData().size() > 0 && !TextUtils.isEmpty(tvNum.getText().toString())
                     ) {
                 btnSave.setEnabled(true);
+                if (isAdd) {
+                    //新增
+                    imgState.setImageResource(R.drawable.ic_not_save);
+                } else {
+                    //历史
+                    if ("2".equals(mScoreDetail.scoreState)) {
+                        //审核通过
+                        imgState.setImageResource(R.drawable.ic_passed);
+                    } else if ("3".equals(mScoreDetail.scoreState)) {
+                        imgState.setImageResource(R.drawable.ic_error);
+                    }
+                }
             } else {
+                if (isAdd) {
+                    //新增
+                    imgState.setImageResource(R.drawable.ic_new);
+                } else {
+                    //历史
+                    if ("2".equals(mScoreDetail.scoreState)) {
+                        //审核通过
+                        imgState.setImageResource(R.drawable.ic_passed);
+                    } else if ("3".equals(mScoreDetail.scoreState)) {
+                        imgState.setImageResource(R.drawable.ic_error);
+                    }
+                }
                 btnSave.setEnabled(false);
             }
         } else {
@@ -314,6 +386,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         ShowItem.getInstance().release();
         ShowStandard.getInstance().release();
         ShowDeduct.getInstance().release();
+        ShowDelete.getInstance().release();
         templateDetailList.clear();
         standardList.clear();
         deductList.clear();
@@ -337,6 +410,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     @Override
     public void killMyself() {
+        setResult(101);
         finish();
     }
 
@@ -346,7 +420,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             case R.id.tv_right_top:
                 if (!isAdd) {
                     //删除评分项记录
-                    ShowDelete.getInstance().ShowDelete(this, tvAddress, () -> {
+                    ShowDelete.getInstance().ShowDelete(this, tvAddress, getResources().getString(R.string.delete_score), () -> {
                         if (mPresenter != null) {
                             mPresenter.deleteScore(taskId, scoreId);
                         }
@@ -670,9 +744,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     @Override
     public void updateTaskBaseInfo(TaskBaseInfo info) {
         this.mTaskBaseInfo = info;
-        tvTitle.setText(info.address);
+       // tvTitle.setText(info.address);
         tvAddress.setText(info.address);
-        tvScore.setText(info.totalScore);
+        tvScore.setText("-" + info.totalScore);
         tvState.setText(getState(info.complete));
     }
 
@@ -702,7 +776,6 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     @Override
     public void updateScoreDetail(ScoreDetail data) {
         this.mScoreDetail = data;
-        tvScoreName.setText(data.scoreName);
         tvItemContent.setText(data.itemName);
         tvStandardContent.setText(data.standardName);
         tvDeductContent.setText(data.deductName);
@@ -719,8 +792,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             List<LocalImage> imageList = new ArrayList<>();
             for (int i = 0; i < j; i++) {
                 LocalImage localImage = new LocalImage();
-                localImage.imgUrl = imageList.get(i).imgUrl;
-                localImage.imgId = imageList.get(i).imgId;
+                localImage.imgUrl = data.imgList.get(i).imgUrl;
+                localImage.imgId = data.imgList.get(i).imgId;
                 localImage.isDownLoad = true;
                 localImage.showDelete = false;
                 imageList.add(localImage);

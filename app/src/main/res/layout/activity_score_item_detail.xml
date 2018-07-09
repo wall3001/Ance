@@ -28,17 +28,18 @@
     <Button
         android:id="@+id/btn_save"
         style="@style/btn_save"
-        android:enabled="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
+        android:enabled="false"
         android:text="@string/save" />
 
     <ScrollView
         android:id="@+id/mScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@id/btn_save"
         android:layout_below="@id/divider">
 
         <LinearLayout
@@ -49,12 +50,28 @@
             android:showDividers="middle">
 
 
-            <TextView
-                android:id="@+id/tv_score_name"
-                style="@style/title_left_score_item"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="评分项目名称01" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/img_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_complete" />
+
+
+                <TextView
+                    android:id="@+id/tv_score_name"
+                    style="@style/title_left_score_item_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/img_state"
+                    android:text="@string/score_record_item" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/rv_item"
@@ -230,6 +247,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_below="@id/rv_add_img"
+                    android:layout_margin="10dp"
                     android:orientation="horizontal"
                     android:visibility="gone"
                     app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
@@ -254,7 +272,7 @@
                     style="@style/img_right_score"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_2" />
+                    android:src="@drawable/ic_location" />
 
 
                 <EditText

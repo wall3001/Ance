@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Field</string>
+    <string name="app_name">安策调研</string>
     <string name="login_title_1"><u>安策智库</u></string>
     <string name="login_title_2">实地调研系统</string>
     <string name="hint_user_name">用户名</string>
@@ -65,4 +65,5 @@
     <string name="save_fail">保存失败</string>
     <string name="save_modify">保存修改</string>
     <string name="loading">正在加载中...</string>
+    <string name="score_record_item">评分记录项录入</string>
 </resources>

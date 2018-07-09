@@ -58,6 +58,7 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
 
     private String taskID;
     private String templateID;
+
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
         DaggerScoreListComponent //如找不到该类,请编译一下项目
@@ -110,7 +111,7 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
 
     private void deleteScoreItem(String taskID, String scoreId) {
 
-        ShowDelete.getInstance().ShowDelete(this, mRecyclerView, () -> {
+        ShowDelete.getInstance().ShowDelete(this, mRecyclerView, getString(R.string.delete_score), () -> {
             if (mPresenter != null) {
                 mPresenter.deleteScoreItem(taskID, scoreId);
             }
@@ -124,9 +125,12 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
             intent.setClass(this, ScoreItemDetailActivity.class);
             intent.putExtra(EventBusTags.TASKID, taskID);
             intent.putExtra(EventBusTags.ISADD, false);
+            intent.putExtra(EventBusTags.ADDRESS,tvAddress.getText().toString());
+            intent.putExtra(EventBusTags.SCORERECORDITEMNAME, item.scoreName);
             intent.putExtra(EventBusTags.SCOREID, item.scoreId);
             intent.putExtra(EventBusTags.TEMPLATEID, templateID);
-            ArmsUtils.startActivity(this, intent);
+            getActivity().startActivityForResult(intent, 100);
+            //   ArmsUtils.starta(this, intent);
         }
     }
 
@@ -161,7 +165,7 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
     public void updateBaseInfo(TaskBaseInfo data) {
         tvTitle.setText(data.address);
         tvAddress.setText(data.address);
-        tvScore.setText(data.totalScore);
+        tvScore.setText("-"+data.totalScore);
         tvState.setText(getState(data.complete));
     }
 
@@ -217,10 +221,20 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
         Intent intent = new Intent();
         intent.putExtra(EventBusTags.TASKID, taskID);
         intent.putExtra(EventBusTags.ISADD, true);
+        intent.putExtra(EventBusTags.ADDRESS,tvAddress.getText().toString());
         intent.putExtra(EventBusTags.TEMPLATEID, templateID);
         intent.setClass(this, ScoreItemDetailActivity.class);
-        ArmsUtils.startActivity(intent);
+        getActivity().startActivityForResult(intent, 100);
+        // ArmsUtils.startActivity(intent);
+    }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == 101) {
+            if (mPresenter != null) {
+                mPresenter.requestScoreList(true,taskID);
+            }
+        }
     }
 }

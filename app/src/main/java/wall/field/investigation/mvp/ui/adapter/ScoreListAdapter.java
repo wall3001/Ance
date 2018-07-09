@@ -2,6 +2,7 @@ package wall.field.investigation.mvp.ui.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
 
@@ -28,20 +29,21 @@ public class ScoreListAdapter extends BaseQuickAdapter<ScoreItem, BaseViewHolder
     @Override
     public void bindToRecyclerView(RecyclerView recyclerView) {
         super.bindToRecyclerView(recyclerView);
-        setEmptyView(R.layout.score_empty,recyclerView);
+        setEmptyView(R.layout.score_empty, recyclerView);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, ScoreItem item) {
         helper.setText(R.id.tv_name, item.scoreName)
                 .setText(R.id.tv_summary, item.scoreSummary)
-                .setText(R.id.tv_score, item.scoreValue)
-                .setTextColor(R.id.tv_state,mContext.getResources().getColor(getColor(item.scoreState)))
+                .setText(R.id.tv_score, TextUtils.isEmpty(item.scoreState) ? "" : "-" + item.scoreValue)
+                .setTextColor(R.id.tv_state, mContext.getResources().getColor(getColor(item.scoreState)))
                 .setText(R.id.tv_state, getState(item.scoreState));
     }
 
+
     private int getColor(String scoreState) {
-       int  color = R.color.white;
+        int color = R.color.white;
         switch (scoreState) {
             case "0":
                 color = R.color.txt_sub;
@@ -58,11 +60,11 @@ public class ScoreListAdapter extends BaseQuickAdapter<ScoreItem, BaseViewHolder
             default:
                 break;
         }
-        return  color;
+        return color;
     }
 
     private String getState(String scoreState) {
-        String state ;
+        String state;
         switch (scoreState) {
             case "0":
                 state = "未提交";

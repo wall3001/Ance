@@ -69,6 +69,16 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
+    <style name="title_left_subject">
+        <item name="android:textColor">@color/txt_sub</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+    </style>
+
     <style name="title_left_score">
         <item name="android:textColor">@color/txt_sub</item>
         <item name="android:gravity">center</item>
@@ -145,6 +155,17 @@
 
     <!--hint颜色-->
     <color name="txt_hint">#B9B9B9</color>
+
+    <style name="title_left_score_item_icon" parent="title_left_subject">
+        <item name="android:gravity">center|left</item>
+
+    </style>
+    <!--默认样式-->
+    <style name="picture" parent="picture.default.style">
+
+    </style>
+
+
 
 
 </resources>

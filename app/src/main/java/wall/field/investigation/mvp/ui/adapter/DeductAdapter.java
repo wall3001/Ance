@@ -1,6 +1,7 @@
 package wall.field.investigation.mvp.ui.adapter;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import wall.field.investigation.R;
 import wall.field.investigation.mvp.model.entity.Deduct;
+import wall.field.investigation.mvp.model.entity.Standard;
 
 /**
  * 扣分标准
@@ -45,8 +47,15 @@ public class DeductAdapter extends BaseQuickAdapter<Deduct,BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder helper, Deduct item) {
         helper.setText(R.id.content,item.deductName)
+                .setTextColor(R.id.content,mContext.getResources().getColor(getColor(item)))
                 .setVisible(R.id.img,item.isSelect);
     }
 
+    private Integer getColor(Deduct item) {
+        if (item != null && !TextUtils.isEmpty(item.identification) && "1".equals(item.identification)) {
+            return R.color.txt_sub;
+        }
+        return R.color.txt_main;
+    }
 
 }

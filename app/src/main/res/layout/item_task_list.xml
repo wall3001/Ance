@@ -22,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="10dp"
-        android:text="蚌埠市龙湖区望岗镇"
         android:textColor="@color/blue_address"
         android:textSize="@dimen/sp_16" />
 
@@ -33,7 +32,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/tv_address"
-        android:text="-32"
         android:textColor="@color/red_btn_bg"
         android:textSize="@dimen/sp_16" />
 
@@ -57,7 +55,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="40dp"
         android:paddingTop="10dp"
-        android:text="曹孟德"
         android:textColor="@color/txt_sub"
         android:textSize="@dimen/sp_12" />
 
@@ -68,7 +65,6 @@
         android:layout_alignBottom="@id/tv_name"
         android:layout_toRightOf="@id/tv_name"
         android:paddingLeft="20dp"
-        android:text="2018年6月18日 11:39"
         android:textColor="@color/txt_sub"
         android:textSize="@dimen/sp_12" />
 
@@ -80,7 +76,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
         android:paddingRight="20dp"
-        android:text="未完成"
         android:textColor="@color/civilization_creation"
         android:textSize="@dimen/sp_14" />
 

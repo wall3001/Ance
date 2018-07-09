@@ -27,7 +27,6 @@ public class ImageAdapter extends BaseQuickAdapter<LocalImage, BaseViewHolder> {
     private AppComponent mAppComponent;
     private ImageLoader mImageLoader;
     private ImageView imageView;
-    private ImageView delete;
 
     public ImageAdapter(@Nullable List<LocalImage> data) {
         super(R.layout.item_img, data);
@@ -42,7 +41,6 @@ public class ImageAdapter extends BaseQuickAdapter<LocalImage, BaseViewHolder> {
         }
         //itemView 的 Context 就是 Activity, Glide 会自动处理并和该 Activity 的生命周期绑定
         imageView = helper.getView(R.id.img);
-        delete = helper.getView(R.id.delete);
         helper.addOnClickListener(R.id.delete)
                 .setVisible(R.id.delete, item.showDelete);
         mImageLoader.loadImage(mContext,
