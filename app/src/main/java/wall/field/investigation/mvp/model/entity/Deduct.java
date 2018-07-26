@@ -11,7 +11,7 @@ public class Deduct implements Cloneable{
     public String deductId;
     public String deductName;
     public String score;
-
+    public String identification;
 
     @Override
     public Object clone()  {

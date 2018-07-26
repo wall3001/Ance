@@ -36,7 +36,7 @@ public class ScoreListAdapter extends BaseQuickAdapter<ScoreItem, BaseViewHolder
     protected void convert(BaseViewHolder helper, ScoreItem item) {
         helper.setText(R.id.tv_name, item.scoreName)
                 .setText(R.id.tv_summary, item.scoreSummary)
-                .setText(R.id.tv_score, TextUtils.isEmpty(item.scoreState) ? "" : "-" + item.scoreValue)
+                .setText(R.id.tv_score, TextUtils.isEmpty(item.scoreValue) ? "" : String.format("-%.1f",Double.valueOf(item.scoreValue)))
                 .setTextColor(R.id.tv_state, mContext.getResources().getColor(getColor(item.scoreState)))
                 .setText(R.id.tv_state, getState(item.scoreState));
     }

@@ -23,4 +23,9 @@ public interface EventBusTags {
 
     String TEMPLATEID = "TEMPLATEID";
 
+    String SCORERECORDITEMNAME = "SCORERECORDITEMNAME";
+
+    String ADDRESS ="ADDRESS";
+
+    String SAVEUSER = "SAVEUSER";
 }

@@ -12,10 +12,12 @@ import com.jess.arms.utils.DeviceUtils;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import wall.field.investigation.app.EventBusTags;
 import wall.field.investigation.app.utils.StorageUtils;
 import wall.field.investigation.mvp.contract.LoginContract;
 import wall.field.investigation.mvp.model.api.Api;
 import wall.field.investigation.mvp.model.entity.BaseJson;
+import wall.field.investigation.mvp.model.entity.Name;
 import wall.field.investigation.mvp.model.entity.User;
 import wall.field.investigation.mvp.model.entity.Version;
 
@@ -52,6 +54,11 @@ public class LoginModel extends BaseModel implements LoginContract.Model {
     @Override
     public Observable<BaseJson<Version>> checkNewVersion() {
         return mRepositoryManager.obtainRetrofitService(Api.class).checkVersion(getCurrentVersion());
+    }
+
+    @Override
+    public void saveName(Name saveName) {
+        new StorageUtils<Name>(Name.class, mApplication).save(saveName);
     }
 
     private String getCurrentVersion() {

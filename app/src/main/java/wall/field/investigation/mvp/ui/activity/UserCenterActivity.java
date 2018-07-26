@@ -123,6 +123,8 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
                 PictureSelector.create(this)
                         .openGallery(PictureMimeType.ofImage())
                         .imageSpanCount(3)
+                        .compress(true)
+                        .minimumCompressSize(2048) //小于2M的不压缩
                         .selectionMode(PictureConfig.SINGLE)
                         .forResult(PictureConfig.CHOOSE_REQUEST);
                 break;
@@ -156,7 +158,11 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
                     // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true  注意：音视频除外
                     // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true  注意：音视频除外
                     // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
-                    Glide.with(this).load(selectList.get(0).getPath()).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
+                    if(selectList.get(0).isCompressed()){
+                        Glide.with(this).load(selectList.get(0).getCompressPath()).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
+                    }else{
+                        Glide.with(this).load(selectList.get(0).getPath()).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
+                    }
                     if (mPresenter != null) {
                         mPresenter.changePortrait(selectList.get(0).getPath());
                     }

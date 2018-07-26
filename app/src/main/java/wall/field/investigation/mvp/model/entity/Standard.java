@@ -14,6 +14,7 @@ public class Standard implements Cloneable {
     public String standardName;
     public String scoreLimit;
     public String percent;
+    public String identification;
     public List<Deduct> deductList;
 
     @Override

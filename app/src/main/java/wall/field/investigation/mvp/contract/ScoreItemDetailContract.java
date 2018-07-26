@@ -36,6 +36,8 @@ public interface ScoreItemDetailContract {
         void updateScoreDetail(ScoreDetail data);
 
         void onSaveStateListener();
+
+        void showDeduct();
     }
 
     //Model层定义接口,外部只需关心Model返回的数据,无需关心内部细节,即是否使用缓存
@@ -53,8 +55,8 @@ public interface ScoreItemDetailContract {
 
         void saveTemplate(List<TemplateDetail> data);
 
-        Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location);
+        Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
 
-        Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location);
+        Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
     }
 }

@@ -90,7 +90,7 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
     }
 
     @Override
-    public Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location) {
+    public Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data,String address, String location) {
         LinkedHashMap<String, RequestBody> bodyMap = new LinkedHashMap<>();
         //添加基础参数
         //直接传json格式过去
@@ -105,6 +105,7 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
             json.put("deductId", deductId);
             json.put("deductNum", deductNum);
             json.put("location", location);
+            json.put("address", address);
             json.put("imgList", data2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -123,7 +124,7 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
     }
 
     @Override
-    public Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location) {
+    public Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data,String address,String location) {
 
 
         LinkedHashMap<String, RequestBody> bodyMap = new LinkedHashMap<>();
@@ -139,7 +140,6 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
             }
         }
         JSONArray data2 = new JsonHelp<LocalImage>(LocalImage.class).list2JsonArray(localImages);
-
         try {
             json.put("uid", UserUtils.getCurrentUid(mApplication));
             json.put("token", UserUtils.getCurrentToken(mApplication));
@@ -150,6 +150,7 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
             json.put("deductId", deductId);
             json.put("deductNum", deductNum);
             json.put("location", location);
+            json.put("address",address);
             json.put("imgAddList", data2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -158,7 +159,7 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
         bodyMap.put("json", body);
         int k = localImages.size();
         for (int i = 0; i < k; i++) {
-            LocalImage file = data.get(i);
+            LocalImage file = localImages.get(i);
             File uf = new File(file.imgUrl);
             Timber.e("uf == " + uf.getName());
             bodyMap.put("img" + i + "\"; filename=\"" + uf.getName(), RequestBody.create(MediaType.parse("image/*"), uf));

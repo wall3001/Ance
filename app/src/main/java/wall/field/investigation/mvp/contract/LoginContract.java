@@ -5,6 +5,7 @@ import com.jess.arms.mvp.IModel;
 
 import io.reactivex.Observable;
 import wall.field.investigation.mvp.model.entity.BaseJson;
+import wall.field.investigation.mvp.model.entity.Name;
 import wall.field.investigation.mvp.model.entity.User;
 import wall.field.investigation.mvp.model.entity.Version;
 
@@ -26,5 +27,7 @@ public interface LoginContract {
         void save(User user);
 
         Observable<BaseJson<Version>> checkNewVersion();
+
+        void saveName(Name saveName);
     }
 }

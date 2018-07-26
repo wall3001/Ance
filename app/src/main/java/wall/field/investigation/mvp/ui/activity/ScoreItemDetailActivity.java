@@ -43,6 +43,7 @@ import wall.field.investigation.di.component.DaggerScoreItemDetailComponent;
 import wall.field.investigation.di.module.ScoreItemDetailModule;
 import wall.field.investigation.mvp.contract.ScoreItemDetailContract;
 import wall.field.investigation.mvp.model.entity.Deduct;
+import wall.field.investigation.mvp.model.entity.ImageBean;
 import wall.field.investigation.mvp.model.entity.LocalImage;
 import wall.field.investigation.mvp.model.entity.ScoreDetail;
 import wall.field.investigation.mvp.model.entity.Standard;
@@ -97,11 +98,16 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     Button btnSave;
     @BindView(R.id.img_state)
     ImageView imgState;
+    @BindView(R.id.tv_score_state)
+    TextView tvScoreState;
+    @BindView(R.id.rv_deduct_score)
+    RelativeLayout rvDeductScore;
     private String taskId;
     private String scoreId;
     private String templateId;
     private boolean isAdd; //是否是新增
 
+    private boolean hasChangeImg = false; //是否改了图片；
     @Inject
     List<TemplateDetail> templateDetailList;
 
@@ -119,6 +125,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     private ScoreDetail mScoreDetail;
 
+    private ScoreDetail oldScoreDetail;
+
     private TaskBaseInfo mTaskBaseInfo;
 
     private String scoreName;
@@ -135,8 +143,13 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         public void onLocationChanged(AMapLocation aMapLocation) {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
-                    //可在其中解析amapLocation获取相应内容。
-                    tvLocationContent.setText(aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() + aMapLocation.getStreet());
+                    //可在其中解析amapLocation获取相应内容。aMapLocation.getProvince() + aMapLocation.getCity() +
+                    tvLocationContent.setText(aMapLocation.getDistrict() + aMapLocation.getStreet());
+                    if (mScoreDetail == null) {
+                        mScoreDetail = new ScoreDetail();
+                    }
+                    mScoreDetail.address = tvLocationContent.getText().toString();
+                    mScoreDetail.location = aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() + aMapLocation.getStreet();
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 }
@@ -168,7 +181,6 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         scoreId = getIntent().getStringExtra(EventBusTags.SCOREID);
         templateId = getIntent().getStringExtra(EventBusTags.TEMPLATEID);
         scoreName = getIntent().getStringExtra(EventBusTags.SCORERECORDITEMNAME);
-        //   String address = getIntent().getStringExtra(EventBusTags.ADDRESS);
         //   tvTitle.setText(TextUtils.isEmpty(address) ? getString(R.string.score_record_item) : address);
         tvLocationContent.setFocusableInTouchMode(false);
         tvLocationContent.setOnClickListener(v -> {
@@ -177,6 +189,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         if (isAdd) {
             imgState.setImageResource(R.drawable.ic_new);
             tvTitle.setText(R.string.add_score_item);
+            //从上级带过来地址
+            String address = getIntent().getStringExtra(EventBusTags.ADDRESS);
+            tvLocationContent.setText(address);
             btnSave.setText(R.string.save);
         } else {
             imgState.setImageResource(R.drawable.ic_complete);
@@ -251,11 +266,16 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     //删除服务端的图片
                     if (mPresenter != null) {
                         mPresenter.deleteImage(taskId, scoreId, image, position);
+                        hasChangeImg = true;
                     }
                 } else {
                     //删除本地图片
                     imageAdapter.remove(position);
+                    if (oldScoreDetail != null && oldScoreDetail.imgList.size() == imageAdapter.getData().size()) {
+                        hasChangeImg = false;
+                    }
                     onSaveStateListener();
+
                 }
             }
         });
@@ -308,9 +328,24 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     //历史
                     if ("2".equals(mScoreDetail.scoreState)) {
                         //审核通过
-                        imgState.setImageResource(R.drawable.ic_passed);
+                        if (checkChange()) {
+                            imgState.setImageResource(R.drawable.ic_not_save);
+                        } else {
+                            imgState.setImageResource(R.drawable.ic_passed);
+                        }
                     } else if ("3".equals(mScoreDetail.scoreState)) {
-                        imgState.setImageResource(R.drawable.ic_error);
+                        if (checkChange()) {
+                            imgState.setImageResource(R.drawable.ic_not_save);
+                        } else {
+                            imgState.setImageResource(R.drawable.ic_error);
+                        }
+                    } else {
+                        if (checkChange()) {
+                            imgState.setImageResource(R.drawable.ic_not_save);
+                        } else {
+                            //待审核
+                            imgState.setImageResource(R.drawable.ic_complete);
+                        }
                     }
                 }
             } else {
@@ -331,6 +366,96 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         } else {
             btnSave.setEnabled(false);
         }
+    }
+
+    private boolean checkChange() {
+        if (mScoreDetail == null) {
+            return false;
+        }
+        if (oldScoreDetail == null) {
+            return false;
+        }
+
+        if (!oldScoreDetail.itemId.equals(mScoreDetail.itemId)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.itemName.equals(mScoreDetail.itemName)
+                ) {
+            return true;
+        }
+
+        if (!oldScoreDetail.standardId.equals(mScoreDetail.standardId)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.standardName.equals(mScoreDetail.standardName)
+                ) {
+            return true;
+        }
+
+        if (!oldScoreDetail.deductId.equals(mScoreDetail.deductId)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.deductName.equals(mScoreDetail.deductName)
+                ) {
+            return true;
+        }
+
+        if (!oldScoreDetail.deductNum.equals(mScoreDetail.deductNum)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.deductValue.equals(mScoreDetail.deductValue)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.deductOnce.equals(mScoreDetail.deductOnce)
+                ) {
+            return true;
+        }
+
+        if (oldScoreDetail.imgList != null && imageAdapter != null && oldScoreDetail.imgList.size() != imageAdapter.getItemCount()
+                ) {
+            return true;
+        } else {
+            if (hasChangeImg) {
+                return true;
+            }
+        }
+        if (!oldScoreDetail.location.equals(mScoreDetail.location)
+                ) {
+            return true;
+        }
+        if (!oldScoreDetail.address.equals(mScoreDetail.address)
+                ) {
+            return true;
+        }
+        //最后比较图片新增再删除未变的情况
+        List<ImageBean> imgs1 = oldScoreDetail.imgList;
+        if (imageAdapter == null) {
+            return false;
+        }
+        List<LocalImage> imgs2 = imageAdapter.getData();
+        if (imgs1.size() > 0 && imgs1.size() == imgs2.size()) {
+            int j = imgs1.size();
+            for (int i = 0; i < j; i++) {
+                if (!imgs1.get(i).imgUrl.equals(imgs2.get(i).imgUrl)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+
+    }
+
+    @Override
+    public void showDeduct() {
+        //显示扣分标准
+        rvDeductScore.performClick();
     }
 
     @Override
@@ -512,7 +637,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                         //更新一次
                         if (deductList.size() == 0) {
                             if (mPresenter != null) {
-                                mPresenter.getTemplateDetail(templateId);
+                                mPresenter.getTemplateDetailFromClickDeduct(templateId);
                             }
                         }
                         if (deductList.size() > 0) {
@@ -527,7 +652,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                         }
                     } else {
                         if (mPresenter != null) {
-                            mPresenter.getTemplateDetail(templateId);
+                            mPresenter.getTemplateDetailFromClickDeduct(templateId);
                         }
                     }
                 } else {
@@ -551,9 +676,10 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                         showMessage("已达到扣分上限");
                         value = maxScore;
                     }
+                    mScoreDetail.deductNum = String.valueOf(deductNum);
+                    mScoreDetail.deductValue = String.valueOf(value);
                     tvNum.setText(String.valueOf(deductNum));
                     tvTotalScore.setText(String.format("-%.1f", value));
-                    mScoreDetail.deductNum = String.valueOf(deductNum);
                 }
                 break;
             case R.id.img_add:
@@ -570,9 +696,10 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     showMessage("已达到扣分上限");
                     value = maxScore;
                 }
+                mScoreDetail.deductNum = String.valueOf(deductNum);
+                mScoreDetail.deductValue = String.valueOf(value);
                 tvNum.setText(String.valueOf(deductNum));
                 tvTotalScore.setText(String.format("-%.1f", value));
-                mScoreDetail.deductNum = String.valueOf(deductNum);
                 break;
             case R.id.img_add_img:
                 //添加实地图片
@@ -594,6 +721,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     private void lookupDeductList() {
         int j = standardList.size();
+        if (standardList.size() == 0) {
+            lookupStandard();
+        }
         deductList.clear();
         for (int i = 0; i < j; i++) {
             Standard detail = standardList.get(i);
@@ -724,7 +854,11 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     List<LocalImage> imgList = new ArrayList<>();
                     for (int i = 0; i < selectList.size(); i++) {
                         LocalImage localImage = new LocalImage();
-                        localImage.imgUrl = selectList.get(i).getPath();
+                        if (selectList.get(i).isCompressed()) {
+                            localImage.imgUrl = selectList.get(i).getCompressPath();
+                        } else {
+                            localImage.imgUrl = selectList.get(i).getPath();
+                        }
                         localImage.showDelete = false;
                         localImage.isDownLoad = false;
                         imgList.add(localImage);
@@ -732,6 +866,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     if (mPresenter != null) {
                         mPresenter.addImageList(imgList);
                         onSaveStateListener();
+                    }
+                    if (imgList.size() > 0) {
+                        hasChangeImg = true;
                     }
                     break;
                 default:
@@ -744,9 +881,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     @Override
     public void updateTaskBaseInfo(TaskBaseInfo info) {
         this.mTaskBaseInfo = info;
-       // tvTitle.setText(info.address);
+        // tvTitle.setText(info.address);
         tvAddress.setText(info.address);
-        tvScore.setText("-" + info.totalScore);
+        tvScore.setText(String.format("-%.1f", Double.valueOf(info.totalScore)));
         tvState.setText(getState(info.complete));
     }
 
@@ -770,18 +907,25 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         PictureSelector.create(this)
                 .openGallery(PictureMimeType.ofImage())
                 .imageSpanCount(3)
+                .compress(true)
+                .minimumCompressSize(2048) //小于2M的不压缩
                 .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
     @Override
     public void updateScoreDetail(ScoreDetail data) {
         this.mScoreDetail = data;
+        this.oldScoreDetail = (ScoreDetail) data.clone();
         tvItemContent.setText(data.itemName);
         tvStandardContent.setText(data.standardName);
         tvDeductContent.setText(data.deductName);
         tvNum.setText(data.deductNum);
         deductNum = Integer.valueOf(data.deductNum);
-        tvTotalScore.setText(String.format("-%s", data.deductValue));
+        if (!TextUtils.isEmpty(data.scoreState)) {
+            tvScoreState.setText(getItemState(data.scoreState));
+            tvScoreState.setTextColor(getColor(data.scoreState));
+        }
+        tvTotalScore.setText(String.format("-%.1f", Double.valueOf(data.deductValue)));
         setMaxScore(mScoreDetail);
         //添加图片
         if (data.imgList != null && data.imgList.size() > 0) {
@@ -801,7 +945,12 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             imageAdapter.setNewData(imageList);
         }
         //地理位置
-        tvLocationContent.setText(data.location);
+        if(TextUtils.isEmpty(data.address)){
+            tvLocationContent.setText(data.location);
+        }else{
+            tvLocationContent.setText(data.address);
+        }
+
 
     }
 
@@ -835,7 +984,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             }
             if (mPresenter != null) {
                 mPresenter.submitScore(taskId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString());
+                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(),mScoreDetail.location);
             }
         } else {
             //修改
@@ -844,10 +993,54 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             }
             if (mPresenter != null) {
                 mPresenter.updateScoreDetail(taskId, scoreId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString());
+                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(),mScoreDetail.location);
             }
         }
+    }
 
+
+    private int getColor(String scoreState) {
+        int color = R.color.white;
+        switch (scoreState) {
+            case "0":
+                color = R.color.txt_sub;
+                break;
+            case "1":
+                color = R.color.txt_sub;
+                break;
+            case "2":
+                color = R.color.green_past;
+                break;
+            case "3":
+                color = R.color.red_btn_bg;
+                break;
+            default:
+                break;
+        }
+        return color;
+    }
+
+    private String getItemState(String scoreState) {
+        String state;
+        switch (scoreState) {
+            case "0":
+                state = "未提交";
+                break;
+            case "1":
+                state = "待审核";
+                break;
+            case "2":
+                state = "通过";
+                break;
+            case "3":
+                state = "需修改";
+                break;
+            default:
+                state = "";
+                break;
+        }
+        return state;
 
     }
+
 }

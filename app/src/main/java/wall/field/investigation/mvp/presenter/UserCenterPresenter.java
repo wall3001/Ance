@@ -1,6 +1,7 @@
 package wall.field.investigation.mvp.presenter;
 
 import android.app.Application;
+import android.text.TextUtils;
 
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.di.scope.ActivityScope;
@@ -56,7 +57,9 @@ public class UserCenterPresenter extends BasePresenter<UserCenterContract.Model,
                 if(objectBaseJson.isSuccess()){
                     mModel.updatePortrait(objectBaseJson.getData());
                 }
-                mRootView.showMessage(objectBaseJson.getMsg());
+                if(!TextUtils.isEmpty(objectBaseJson.getMsg())){
+                    mRootView.showMessage(objectBaseJson.getMsg());
+                }
             }
         });
     }

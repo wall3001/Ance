@@ -234,6 +234,7 @@ public class ScoreListActivity extends BaseActivity<ScoreListPresenter> implemen
         if (requestCode == 100 && resultCode == 101) {
             if (mPresenter != null) {
                 mPresenter.requestScoreList(true,taskID);
+                mPresenter.getTaskBaseInfo(taskID);
             }
         }
     }

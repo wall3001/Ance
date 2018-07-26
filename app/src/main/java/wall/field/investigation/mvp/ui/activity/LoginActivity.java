@@ -96,10 +96,21 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         if (name != null) {
             editName.setText(name.name);
             editPassword.setText(name.password);
+            if (!TextUtils.isEmpty(name.name)) {
+                editName.setSelection(name.name.length());
+                imgDeleteName.setVisibility(View.VISIBLE);
+            }
+            if (!TextUtils.isEmpty(name.password)) {
+                editPassword.setSelection(name.password.length());
+                imgDeletePwd.setVisibility(View.VISIBLE);
+            }
+        }else{
+         //   imgDeleteName.setVisibility(View.GONE);
+          //  imgDeletePwd.setVisibility(View.GONE);
         }
 
-        addTextChangedListener(editName,imgDeleteName);
-        addTextChangedListener(editPassword,imgDeletePwd);
+        addTextChangedListener(editName, imgDeleteName);
+        addTextChangedListener(editPassword, imgDeletePwd);
     }
 
     private void addTextChangedListener(EditText edit, ImageView img) {
@@ -111,9 +122,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!TextUtils.isEmpty(edit.getText().toString())){
+                if (!TextUtils.isEmpty(edit.getText().toString())) {
                     img.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     img.setVisibility(View.GONE);
                 }
             }
@@ -164,7 +175,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     private boolean show = false;
 
-    @OnClick({R.id.img_show, R.id.btn_login,R.id.img_delete_name, R.id.img_delete_pwd})
+    @OnClick({R.id.img_show, R.id.btn_login, R.id.img_delete_name, R.id.img_delete_pwd})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_show:

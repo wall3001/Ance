@@ -13,6 +13,8 @@ public class TemplateDetail {
 
     public String itemName;
 
+    public String identification;
+
     public boolean isSelect;
 
     public List<Standard> standardList;

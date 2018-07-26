@@ -1,16 +1,12 @@
 package wall.field.investigation.mvp.model.entity;
 
 /**
- * Created by wall on 2018/6/15 15:34
+ * Created by wall on 2018/7/9 14:16
  * w_ll@winning.com.cn
  */
-public class User {
+public class Name {
 
-
-    public String uid;
-    public String token;
     public String name;
     public String password;
-    public String portraitUrl;
 
 }

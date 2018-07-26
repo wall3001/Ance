@@ -77,7 +77,6 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
                 .subscribe(new ErrorHandleSubscriber<BaseJson<TaskBaseInfo>>(mErrorHandler) {
                     @Override
                     public void onNext(BaseJson<TaskBaseInfo> taskBaseInfoBaseJson) {
-
                         if (taskBaseInfoBaseJson.isSuccess()) {
                             mRootView.updateTaskBaseInfo(taskBaseInfoBaseJson.getData());
                         }
@@ -198,7 +197,22 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
                         }
                     }
                 });
+        //createTemplate();
+    }
 
+    public void getTemplateDetailFromClickDeduct(String templateId) {
+
+        mModel.getTemplateDetail(templateId)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<List<TemplateDetail>>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<List<TemplateDetail>> listBaseJson) {
+                        if (listBaseJson.isSuccess() && listBaseJson.getData() != null && listBaseJson.getData().size() > 0) {
+                            mModel.saveTemplate(listBaseJson.getData());
+                            mRootView.showDeduct();
+                        }
+                    }
+                });
         //createTemplate();
     }
 
@@ -233,11 +247,11 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
     }
 
     //新增
-    public void submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location) {
+    public void submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location) {
         if (TextUtils.isEmpty(taskId)) {
             return;
         }
-        mModel.submitScore(taskId,itemId,standardId,deductId,deductNum,data,location)
+        mModel.submitScore(taskId,itemId,standardId,deductId,deductNum,data,address,location)
                 .compose(RxUtils.applySchedulers(mRootView))
                 .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
                     @Override
@@ -253,11 +267,11 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
     }
 
     //修改
-    public void updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String location) {
+    public void updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data,String address, String location) {
         if (TextUtils.isEmpty(taskId) || TextUtils.isEmpty(scoreId)) {
             return;
         }
-        mModel.updateScoreDetail(taskId,scoreId,itemId,standardId,deductId,deductNum,data,location)
+        mModel.updateScoreDetail(taskId,scoreId,itemId,standardId,deductId,deductNum,data,address,location)
                 .compose(RxUtils.applySchedulers(mRootView))
                 .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
                     @Override
