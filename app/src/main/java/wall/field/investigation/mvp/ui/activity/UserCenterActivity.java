@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
+import com.jess.arms.utils.DeviceUtils;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -30,7 +30,6 @@ import wall.field.investigation.app.utils.UserUtils;
 import wall.field.investigation.di.component.DaggerUserCenterComponent;
 import wall.field.investigation.di.module.UserCenterModule;
 import wall.field.investigation.mvp.contract.UserCenterContract;
-import wall.field.investigation.mvp.model.entity.User;
 import wall.field.investigation.mvp.presenter.UserCenterPresenter;
 import wall.field.investigation.mvp.ui.view.GlideCircleTransform;
 import wall.field.investigation.mvp.ui.view.LoadingDialog;
@@ -48,6 +47,8 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
     ImageView imgPortrait;
     @BindView(R.id.rv_change_portrait)
     RelativeLayout rvChangePortrait;
+    @BindView(R.id.tv_version)
+    TextView tvVersion;
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -61,7 +62,8 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
 
     @Override
     public int initView(@Nullable Bundle savedInstanceState) {
-        return R.layout.activity_user_center; //如果你不需要框架帮你设置 setContentView(id) 需要自行设置,请返回 0
+        return R.layout.activity_user_center;
+        //如果你不需要框架帮你设置 setContentView(id) 需要自行设置,请返回 0
     }
 
     @Override
@@ -69,6 +71,8 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
         tvTitle.setText(R.string.user_center);
         tvCurUser.setText(UserUtils.getCurrentName(getBaseContext()));
         Glide.with(this).load(UserUtils.getCurrentPortrait(getBaseContext())).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
+        tvVersion.setText(String.valueOf(DeviceUtils.getVersionName(this)));
+
     }
 
     private Dialog loadingDialog;
@@ -158,9 +162,9 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
                     // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true  注意：音视频除外
                     // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true  注意：音视频除外
                     // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
-                    if(selectList.get(0).isCompressed()){
+                    if (selectList.get(0).isCompressed()) {
                         Glide.with(this).load(selectList.get(0).getCompressPath()).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
-                    }else{
+                    } else {
                         Glide.with(this).load(selectList.get(0).getPath()).apply(RequestOptions.bitmapTransform(new GlideCircleTransform(getBaseContext()))).into(imgPortrait);
                     }
                     if (mPresenter != null) {
@@ -172,6 +176,5 @@ public class UserCenterActivity extends BaseActivity<UserCenterPresenter> implem
             }
         }
     }
-
 
 }

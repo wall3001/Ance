@@ -1,13 +1,18 @@
 package winnings.update;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 
 
 public class ApkInstallReceiver extends BroadcastReceiver {
+
+    private static final int INSTALL_PACKAGES_REQUESTCODE = 108 ;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -35,9 +40,13 @@ public class ApkInstallReceiver extends BroadcastReceiver {
             Logger.get().d("file location " + downloadFileUri.toString());
             install.setDataAndType(downloadFileUri, "application/vnd.android.package-archive");
             install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             context.startActivity(install);
         } else {
             Logger.get().d("download failed");
         }
     }
+
+
 }

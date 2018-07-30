@@ -428,7 +428,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 ) {
             return true;
         }
-        if (!oldScoreDetail.address.equals(mScoreDetail.address)
+        if (!TextUtils.isEmpty(oldScoreDetail.address) && !oldScoreDetail.address.equals(mScoreDetail.address)
                 ) {
             return true;
         }
@@ -945,9 +945,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             imageAdapter.setNewData(imageList);
         }
         //地理位置
-        if(TextUtils.isEmpty(data.address)){
+        if (TextUtils.isEmpty(data.address)) {
             tvLocationContent.setText(data.location);
-        }else{
+        } else {
             tvLocationContent.setText(data.address);
         }
 
@@ -984,7 +984,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             }
             if (mPresenter != null) {
                 mPresenter.submitScore(taskId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(),mScoreDetail.location);
+                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location);
             }
         } else {
             //修改
@@ -993,7 +993,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             }
             if (mPresenter != null) {
                 mPresenter.updateScoreDetail(taskId, scoreId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(),mScoreDetail.location);
+                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location);
             }
         }
     }

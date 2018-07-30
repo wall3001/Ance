@@ -1,10 +1,14 @@
 package winnings.update;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 
 import java.util.List;
 
@@ -19,8 +23,10 @@ public class UpdaterUtils {
         Intent install = new Intent(Intent.ACTION_VIEW);
         install.setDataAndType(uri, "application/vnd.android.package-archive");
         install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //添加这一句表示对目标应用临时授权该Uri所代表的文件
+        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(install);
-        Intent intent = new Intent();
+
     }
 
 

@@ -1,5 +1,6 @@
 package winnings.update;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.widget.Toast;

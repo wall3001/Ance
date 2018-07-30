@@ -20,11 +20,17 @@ import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.utils.DeviceUtils;
+import com.jess.arms.utils.PermissionUtil;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import me.jessyan.rxerrorhandler.core.RxErrorHandler;
 import timber.log.Timber;
 import wall.field.investigation.R;
 import wall.field.investigation.app.EventBusTags;
@@ -66,6 +72,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @BindView(R.id.img_delete_pwd)
     ImageView imgDeletePwd;
 
+    private RxPermissions rxPermissions;
+    @Inject
+    RxErrorHandler mErrorHandler;
+
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
         DaggerLoginComponent //如找不到该类,请编译一下项目
@@ -74,6 +84,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                 .loginModule(new LoginModule(this))
                 .build()
                 .inject(this);
+        rxPermissions = new RxPermissions(this);
     }
 
     @Override
@@ -104,9 +115,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                 editPassword.setSelection(name.password.length());
                 imgDeletePwd.setVisibility(View.VISIBLE);
             }
-        }else{
-         //   imgDeleteName.setVisibility(View.GONE);
-          //  imgDeletePwd.setVisibility(View.GONE);
+        } else {
+            //   imgDeleteName.setVisibility(View.GONE);
+            //  imgDeletePwd.setVisibility(View.GONE);
         }
 
         addTextChangedListener(editName, imgDeleteName);
@@ -228,17 +239,32 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         DeviceUtils.hideSoftKeyboard(this, editName);
         ShowNewVersion.getInstance().ShowNewVersion(this, version, editName, () -> {
             if (!TextUtils.isEmpty(version.url)) {
-                if (version.url.startsWith("http") | version.url.startsWith("Http") | version.url.startsWith("HTTP")) {
-                    UpdaterConfig config = new UpdaterConfig.Builder(this)
-                            .setTitle(getResources().getString(R.string.app_name))
-                            .setDescription(version.version)
-                            .setFileUrl(version.url.replaceAll("\\\\", "/"))
-                            .setCanMediaScanner(true)
-                            .build();
-                    Updater.get().showLog(true).download(config);
-                    String s = version.url.replaceAll("\\\\", "/");
-                    Timber.e("s==" + s);
-                }
+                PermissionUtil.externalStorage(new PermissionUtil.RequestPermission() {
+                    @Override
+                    public void onRequestPermissionSuccess() {
+                        if (version.url.startsWith("http") | version.url.startsWith("Http") | version.url.startsWith("HTTP")) {
+                            UpdaterConfig config = new UpdaterConfig.Builder(getBaseContext())
+                                    .setTitle(getResources().getString(R.string.app_name))
+                                    .setDescription(version.version)
+                                    .setFileUrl(version.url.replaceAll("\\\\", "/"))
+                                    .setCanMediaScanner(true)
+                                    .build();
+                            Updater.get().showLog(true).download(config);
+                            String s = version.url.replaceAll("\\\\", "/");
+                            Timber.e("s==" + s);
+                        }
+                    }
+
+                    @Override
+                    public void onRequestPermissionFailure(List<String> permissions) {
+                        showMessage("请开启读取存取权限");
+                    }
+
+                    @Override
+                    public void onRequestPermissionFailureWithAskNeverAgain(List<String> permissions) {
+
+                    }
+                }, rxPermissions, mErrorHandler);
             }
         });
     }
@@ -247,6 +273,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     protected void onDestroy() {
         super.onDestroy();
         ShowNewVersion.getInstance().release();
+        rxPermissions = null;
+        mErrorHandler = null;
+
     }
 
 
