@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.widget.CustomPopupWindow;
 
 import java.util.List;
@@ -85,9 +86,14 @@ public class ShowDeduct {
                     });
                     save.setOnClickListener(v -> {
                         if (callBack != null) {
-                            callBack.updateDeduct(adapter.getmDeduct());
+                            Deduct deduct = adapter.getmDeduct();
+                            if(deduct!=null){
+                                callBack.updateDeduct(deduct);
+                                popupWindow.dismiss();
+                            }else{
+                                ArmsUtils.snackbarText("请选择一条扣分标准");
+                            }
                         }
-                        popupWindow.dismiss();
                     });
                 }).build();
         customPopupWindow.show();

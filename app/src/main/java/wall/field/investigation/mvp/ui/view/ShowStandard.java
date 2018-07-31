@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.widget.CustomPopupWindow;
 
 import java.util.List;
@@ -86,10 +87,13 @@ public class ShowStandard {
                         adapter.notifyDataSetChanged();
                     });
                     save.setOnClickListener(v -> {
-                        if (callBack != null) {
-                            callBack.updateStandard(adapter.getmStandard());
+                        Standard standard = adapter.getmStandard();
+                        if(standard!=null){
+                            callBack.updateStandard(standard);
+                            popupWindow.dismiss();
+                        }else{
+                            ArmsUtils.snackbarText("请选择一条考核标准");
                         }
-                        popupWindow.dismiss();
                     });
                 }).build();
         customPopupWindow.show();

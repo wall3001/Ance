@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.jess.arms.utils.ArmsUtils;
 import com.jess.arms.widget.CustomPopupWindow;
 
 import java.util.List;
@@ -86,9 +87,15 @@ public class ShowItem {
                     });
                     save.setOnClickListener(v -> {
                         if (callBack != null) {
-                            callBack.updateItem(adapter.getTemplateDetail());
+                            TemplateDetail detail = adapter.getTemplateDetail();
+                            if(detail!=null){
+                                callBack.updateItem(detail);
+                                popupWindow.dismiss();
+                            }else{
+                                ArmsUtils.snackbarText("请选择一条考核项目");
+                            }
                         }
-                        popupWindow.dismiss();
+
                     });
                 }).build();
         customPopupWindow.show();

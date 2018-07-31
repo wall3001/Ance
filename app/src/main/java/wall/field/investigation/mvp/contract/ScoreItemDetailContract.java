@@ -58,5 +58,7 @@ public interface ScoreItemDetailContract {
         Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
 
         Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
+
+        void saveAddress(String address, String location);
     }
 }

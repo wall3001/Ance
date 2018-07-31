@@ -25,9 +25,11 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import timber.log.Timber;
 import wall.field.investigation.app.utils.JsonHelp;
+import wall.field.investigation.app.utils.StorageUtils;
 import wall.field.investigation.app.utils.UserUtils;
 import wall.field.investigation.mvp.contract.ScoreItemDetailContract;
 import wall.field.investigation.mvp.model.api.Api;
+import wall.field.investigation.mvp.model.entity.Address;
 import wall.field.investigation.mvp.model.entity.BaseJson;
 import wall.field.investigation.mvp.model.entity.LocalImage;
 import wall.field.investigation.mvp.model.entity.ScoreDetail;
@@ -166,6 +168,14 @@ public class ScoreItemDetailModel extends BaseModel implements ScoreItemDetailCo
             //  bodyMap.put("audio" + i + "\"; filename=\"" + uf.getName(), RequestBody.create(MediaType.parse("audio/*"), uf));
         }
         return mRepositoryManager.obtainRetrofitService(Api.class).updateScoreDetail(bodyMap);
+    }
+
+    @Override
+    public void saveAddress(String address, String location) {
+        Address add = new Address();
+        add.address = address;
+        add.location = location;
+        new StorageUtils<Address>(Address.class,mApplication).save(add);
     }
 
 

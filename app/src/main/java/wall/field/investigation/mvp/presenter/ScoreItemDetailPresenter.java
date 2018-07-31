@@ -258,6 +258,7 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
                     public void onNext(BaseJson<Object> objectBaseJson) {
                         if(objectBaseJson.isSuccess()){
                             mRootView.showMessage(mApplication.getString(R.string.save_success));
+                            mModel.saveAddress(address,location);
                             mRootView.killMyself();
                           }else{
                             mRootView.showMessage(objectBaseJson.getMsg());

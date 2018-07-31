@@ -39,9 +39,11 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import wall.field.investigation.R;
 import wall.field.investigation.app.EventBusTags;
+import wall.field.investigation.app.utils.StorageUtils;
 import wall.field.investigation.di.component.DaggerScoreItemDetailComponent;
 import wall.field.investigation.di.module.ScoreItemDetailModule;
 import wall.field.investigation.mvp.contract.ScoreItemDetailContract;
+import wall.field.investigation.mvp.model.entity.Address;
 import wall.field.investigation.mvp.model.entity.Deduct;
 import wall.field.investigation.mvp.model.entity.ImageBean;
 import wall.field.investigation.mvp.model.entity.LocalImage;
@@ -190,8 +192,12 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             imgState.setImageResource(R.drawable.ic_new);
             tvTitle.setText(R.string.add_score_item);
             //从上级带过来地址
-            String address = getIntent().getStringExtra(EventBusTags.ADDRESS);
-            tvLocationContent.setText(address);
+            //    String address = getIntent().getStringExtra(EventBusTags.ADDRESS);
+            //不用上级地址，用历史地址
+            Address address = new StorageUtils<Address>(Address.class, this).getItem();
+            if (address != null) {
+                tvLocationContent.setText(address.address);
+            }
             btnSave.setText(R.string.save);
         } else {
             imgState.setImageResource(R.drawable.ic_complete);
@@ -424,7 +430,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 return true;
             }
         }
-        if (!oldScoreDetail.location.equals(mScoreDetail.location)
+
+        if (oldScoreDetail.location != null && mScoreDetail.location != null && !oldScoreDetail.location.equals(mScoreDetail.location)
                 ) {
             return true;
         }
@@ -556,12 +563,17 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 //添加考核项目
                 if (templateDetailList.size() > 0) {
                     ShowItem.getInstance().ShowItem(getActivity(), templateDetailList, tvTitle, templateDetail -> {
+                        if (templateDetail == null) {
+                            showMessage("请选择一条考核项目");
+                            return;
+                        }
                         //新增的时候可能为空
                         if (mScoreDetail == null) {
                             mScoreDetail = new ScoreDetail();
                         }
                         boolean hasChanged = true;
-                        if (!TextUtils.isEmpty(mScoreDetail.itemId) && mScoreDetail.itemId.equals(templateDetail.itemId)
+
+                        if (!TextUtils.isEmpty(mScoreDetail.itemId) && !TextUtils.isEmpty(templateDetail.itemId) && mScoreDetail.itemId.equals(templateDetail.itemId)
                                 && !TextUtils.isEmpty(mScoreDetail.itemName) && mScoreDetail.itemName.equals(templateDetail.itemName)) {
                             hasChanged = false;
                         }
@@ -605,8 +617,12 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                             //选择考核标准
                             ShowStandard.getInstance().ShowStandard(getActivity(), standardList, tvTitle, standard -> {
                                 if (mScoreDetail != null) {
+                                    if (standard == null) {
+                                        showMessage("请选择一条考核标准");
+                                        return;
+                                    }
                                     boolean hasChanged = true;
-                                    if (!TextUtils.isEmpty(mScoreDetail.standardId) && mScoreDetail.standardId.equals(standard.standardId) &&
+                                    if (!TextUtils.isEmpty(mScoreDetail.standardId) && !TextUtils.isEmpty(standard.standardId) && mScoreDetail.standardId.equals(standard.standardId) &&
                                             !TextUtils.isEmpty(mScoreDetail.standardName) && mScoreDetail.standardName.equals(standard.standardName)) {
                                         hasChanged = false;
                                     }
@@ -741,6 +757,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     //改变考核标准
     private void updateStandard(Standard standard, boolean hasChanged) {
         if (standard == null) {
+            showMessage("请选择一条考核标准");
             return;
         }
         if (mScoreDetail == null) {
@@ -765,11 +782,16 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     //更新扣分标准
     private void updateDeduct(Deduct deduct) {
-        if (deduct == null || mScoreDetail == null) {
+        if (deduct == null) {
+            showMessage("请选择一条扣分标准");
+            return;
+        }
+
+        if (mScoreDetail == null) {
             return;
         }
         if (!TextUtils.isEmpty(mScoreDetail.deductId) && !TextUtils.isEmpty(mScoreDetail.deductName)) {
-            if (mScoreDetail.deductId.equals(deduct.deductId) && mScoreDetail.deductName.equals(deduct.deductName)) {
+            if (!TextUtils.isEmpty(deduct.deductId) && mScoreDetail.deductId.equals(deduct.deductId) && mScoreDetail.deductName.equals(deduct.deductName)) {
                 //没有改变不改变
                 return;
             }
