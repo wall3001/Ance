@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_ppw"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/line_gray"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_save"
+            android:padding="10dp"
+            android:text="是否提交？"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_18" />
+
+
+        <TextView
+            android:id="@+id/edit_remark"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/edit_rectangle_blue_line"
+            android:hint="@string/hint_copy_task_remark"
+            android:padding="10dp"
+            android:minHeight="80dp"
+            android:text="该条记录含有图片信息，请确认是否提交？"
+            android:textColor="@color/txt_main"
+            android:textSize="@dimen/sp_16" />
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/gray_line"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="取消"
+                android:textSize="@dimen/sp_18" />
+
+            <TextView
+                android:id="@+id/tv_sure"
+                style="@style/btn_save_no_radius"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0px"
+                android:layout_marginRight="0px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="确认"
+                android:textSize="@dimen/sp_18" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
