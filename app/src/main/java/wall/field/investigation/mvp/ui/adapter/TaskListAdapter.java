@@ -31,27 +31,39 @@ public class TaskListAdapter extends BaseQuickAdapter<Task, BaseViewHolder> {
     @Override
     public void bindToRecyclerView(RecyclerView recyclerView) {
         super.bindToRecyclerView(recyclerView);
-        setEmptyView(R.layout.task_list_empty,recyclerView);
+        setEmptyView(R.layout.task_list_empty, recyclerView);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, Task item) {
-        helper.setText(R.id.tv_index, helper.getAdapterPosition() + 1+"")
-                .setText(R.id.tv_address, item.address)
-                .setText(R.id.tv_name, item.name)
-                .setText(R.id.tv_score,getScore(item.totalScore))
-                .setText(R.id.tv_time, getPlanTime(item.timeStamp))
-                .setText(R.id.tv_state, getState(item));
+        helper.setText(R.id.tv_index, helper.getAdapterPosition() + 1 + "")
+                .setText(R.id.tv_address, getAddress(item.address, item.copyRemark, item.copyLocation))
+                        .setText(R.id.tv_name, item.name)
+                        .setText(R.id.tv_score, getScore(item.totalScore))
+                        .setText(R.id.tv_time, getPlanTime(item.timeStamp))
+                        .setText(R.id.tv_state, getState(item));
+    }
+
+    private String getAddress(String address, String copyRemark, String copyLocation) {
+        String ss = address;
+        if(!TextUtils.isEmpty(copyRemark)){
+            ss = ss+"--"+copyRemark;
+        }
+        if(!TextUtils.isEmpty(copyLocation)){
+            ss= ss+"--"+copyLocation;
+        }
+
+        return ss;
     }
 
     private String getScore(String totalScore) {
-        if(TextUtils.isEmpty(totalScore)){
+        if (TextUtils.isEmpty(totalScore)) {
             return "";
         }
-        if("0".equals(totalScore)){
+        if ("0".equals(totalScore)) {
             return "";
         }
-        return  "-"+totalScore;
+        return "-" + totalScore;
     }
 
     private CharSequence getState(Task item) {

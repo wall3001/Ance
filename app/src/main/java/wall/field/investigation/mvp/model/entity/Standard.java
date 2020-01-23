@@ -16,6 +16,11 @@ public class Standard implements Cloneable {
     public String percent;
     public String identification;
     public List<Deduct> deductList;
+    /**
+     *  二期新增:多选三级扣分项目 1：可以，0不可以
+     *
+     */
+    public String isMultipleThird;
 
     @Override
     public Object clone() {

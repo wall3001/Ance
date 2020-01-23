@@ -30,5 +30,6 @@
     <color name="bg_ppw">#8b282727</color>
     <color name="gray_line">#B3B3B3</color>
     <color name="ppw_bg_loading">#dfdfdf</color>
+    <color name="bg_gray_80">#80f9f9f9</color>
 
 </resources>

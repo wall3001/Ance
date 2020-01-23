@@ -11,5 +11,7 @@ public class TaskBaseInfo {
     public String complete;
     public String totalScore;
     public String address;
+    public String copyRemark;
+    public String copyLocation;
 
 }

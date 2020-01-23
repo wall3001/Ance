@@ -66,7 +66,7 @@
         <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">10dp</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@drawable/filter_txt_color</item>
     </style>
 
     <style name="title_left_subject">
@@ -112,6 +112,7 @@
         <item name="android:textSize">@dimen/sp_13</item>
         <item name="android:textColor">@color/txt_sub</item>
         <item name="android:paddingLeft">@dimen/dp_10</item>
+        <item name="android:paddingRight">7dp</item>
     </style>
 
     <!--保存评分项目按钮-->
@@ -119,6 +120,13 @@
         <item name="android:textSize">@dimen/sp_18</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/selector_btn_save</item>
+    </style>
+
+    <!--保存无圆角的-->
+    <style name="btn_save_no_radius">
+        <item name="android:textSize">@dimen/sp_18</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/selector_btn_save_no_radius</item>
     </style>
 
     <style name="title_left_score_item" parent="title_left_score">
@@ -165,7 +173,9 @@
 
     </style>
 
-
+    <style name="SwitchTheme" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@color/switch_text_selector</item>
+    </style>
 
 
 </resources>

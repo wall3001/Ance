@@ -12,5 +12,8 @@ public class User {
     public String name;
     public String password;
     public String portraitUrl;
-
+    /**
+     *  二期新增接口 管理员 = 0,调研员 = 1,调研组长 = 2
+     */
+    public String role;
 }

@@ -15,13 +15,26 @@
         android:text="1"
         android:textSize="@dimen/sp_14" />
 
+    <TextView
+        android:id="@+id/tv_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:paddingRight="20dp"
+        android:text="@string/civilization_creation"
+        android:textColor="@color/civilization_creation"
+        android:textSize="@dimen/sp_14" />
 
     <TextView
         android:id="@+id/tv_address"
-        android:layout_width="wrap_content"
+        android:layout_toLeftOf="@id/tv_type"
+        android:layout_width="match_parent"
+        android:gravity="left"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="10dp"
+        android:paddingRight="10dp"
         android:textColor="@color/blue_address"
         android:textSize="@dimen/sp_16" />
 
@@ -35,16 +48,7 @@
         android:textColor="@color/red_btn_bg"
         android:textSize="@dimen/sp_16" />
 
-    <TextView
-        android:id="@+id/tv_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
-        android:paddingRight="20dp"
-        android:text="@string/civilization_creation"
-        android:textColor="@color/civilization_creation"
-        android:textSize="@dimen/sp_14" />
+
 
 
     <TextView

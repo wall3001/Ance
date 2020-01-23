@@ -8,6 +8,8 @@ public class Address {
 
     public String address;
     public String location;
+    public String longitude;
+    public String latitude;
 
 
 }

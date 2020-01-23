@@ -26,8 +26,25 @@ public class ScoreDetail implements Cloneable {
     public List<ImageBean> imgList;
     public String location;//定位地址
     public String address;//简单地址
+    public String longitude = "0";
+    public String latitude = "0";
+    public String curLocation;
+    public String curLongitude = "0";
+    public String curLatitude = "0";
+
+
+    /**
+     * 二期新增
+     */
+    public String checkStatus;//首查=0, 复查=1, 复查_已整改=2, 复查_未整改=3
+
+    public String isMultipleThird;//多选三级扣分项目 1：可以，0不可以
+
+    public List<Deduct> deductList;
+
+
     @Override
-    public Object clone()  {
+    public Object clone() {
         ScoreDetail o = null;
         try {
             o = (ScoreDetail) super.clone();

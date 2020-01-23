@@ -54,4 +54,9 @@ public class ScoreListModel extends BaseModel implements ScoreListContract.Model
     public Observable<BaseJson<Object>> deleteScoreItem(String taskId, String scoreId) {
         return mRepositoryManager.obtainRetrofitService(Api.class).deleteScoreItem(UserUtils.getCurrentUid(mApplication),UserUtils.getCurrentToken(mApplication),taskId,scoreId);
     }
+
+    @Override
+    public Observable<BaseJson<Object>> updateCopyTaskRemark(String taskId, String copyRemark) {
+        return mRepositoryManager.obtainRetrofitService(Api.class).updateCopyTaskRemark(UserUtils.getCurrentUid(mApplication),UserUtils.getCurrentToken(mApplication),taskId,copyRemark);
+    }
 }

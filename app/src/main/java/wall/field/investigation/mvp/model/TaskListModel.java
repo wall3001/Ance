@@ -40,7 +40,12 @@ public class TaskListModel extends BaseModel implements TaskListContract.Model {
     }
 
     @Override
-    public Observable<BaseJson<List<Task>>> requestTaskList(boolean pullToRefresh, int pageNum, int page,int state) {
-        return mRepositoryManager.obtainRetrofitService(Api.class).getTaskList(UserUtils.getCurrentUid(mApplication),UserUtils.getCurrentToken(mApplication),pageNum,page,state);
+    public Observable<BaseJson<List<Task>>> requestTaskList(boolean pullToRefresh, int pageNum, int page,int complete,int orderType,String taskName) {
+        return mRepositoryManager.obtainRetrofitService(Api.class).getTaskList(UserUtils.getCurrentUid(mApplication),UserUtils.getCurrentToken(mApplication),pageNum,page,complete,orderType,taskName);
+    }
+
+    @Override
+    public Observable<BaseJson<Object>> copyTaskAndMain(String taskId, String copyRemark, String copyLocation) {
+        return mRepositoryManager.obtainRetrofitService(Api.class).copyTaskAndMain(UserUtils.getCurrentUid(mApplication),UserUtils.getCurrentToken(mApplication),taskId,copyRemark,copyLocation);
     }
 }

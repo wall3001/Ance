@@ -3,18 +3,25 @@ package wall.field.investigation.mvp.ui.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -24,6 +31,8 @@ import com.amap.api.location.AMapLocationListener;
 import com.jess.arms.base.BaseActivity;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
+import com.jess.arms.utils.DeviceUtils;
+import com.jess.arms.widget.CustomPopupWindow;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -36,10 +45,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import wall.field.investigation.R;
 import wall.field.investigation.app.EventBusTags;
 import wall.field.investigation.app.utils.StorageUtils;
+import wall.field.investigation.app.utils.UserUtils;
 import wall.field.investigation.di.component.DaggerScoreItemDetailComponent;
 import wall.field.investigation.di.module.ScoreItemDetailModule;
 import wall.field.investigation.mvp.contract.ScoreItemDetailContract;
@@ -104,6 +115,14 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     TextView tvScoreState;
     @BindView(R.id.rv_deduct_score)
     RelativeLayout rvDeductScore;
+    @BindView(R.id.sw_check)
+    Switch swCheck;
+    @BindView(R.id.rv_check)
+    RelativeLayout rvCheck;
+    @BindView(R.id.img_right_location)
+    ImageView imgRightLocation;
+    @BindView(R.id.tv_location_content_current)
+    EditText tvLocationContentCurrent;
     private String taskId;
     private String scoreId;
     private String templateId;
@@ -137,6 +156,21 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     private double maxScore;
 
+    private CustomPopupWindow remarkCpw;
+
+    private CustomPopupWindow saveSureCpw;
+
+    private String longitude;
+
+    private String curLongitude;
+
+    private String latitude;
+
+    private String curLatitude;
+
+
+    private boolean locationClick = false;
+
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     //声明定位回调监听器
@@ -146,12 +180,23 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     //可在其中解析amapLocation获取相应内容。aMapLocation.getProvince() + aMapLocation.getCity() +
-                    tvLocationContent.setText(aMapLocation.getDistrict() + aMapLocation.getStreet());
+
                     if (mScoreDetail == null) {
                         mScoreDetail = new ScoreDetail();
                     }
-                    mScoreDetail.address = tvLocationContent.getText().toString();
-                    mScoreDetail.location = aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() + aMapLocation.getStreet();
+                    tvLocationContentCurrent.setText(aMapLocation.getDistrict() + aMapLocation.getStreet());
+                    if(locationClick){
+                        tvLocationContent.setText(aMapLocation.getDistrict() + aMapLocation.getStreet());
+                        mScoreDetail.address = tvLocationContent.getText().toString();
+                        mScoreDetail.location = aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() + aMapLocation.getStreet();
+                        mScoreDetail.longitude = String.valueOf(aMapLocation.getLongitude());
+                        mScoreDetail.latitude = String.valueOf(aMapLocation.getLatitude());
+                    }
+                    mScoreDetail.curLocation = aMapLocation.getProvince() + aMapLocation.getCity() + aMapLocation.getDistrict() + aMapLocation.getStreet();
+                    mScoreDetail.curLongitude = String.valueOf(aMapLocation.getLongitude());
+                    mScoreDetail.curLatitude = String.valueOf(aMapLocation.getLatitude());
+                    curLongitude = mScoreDetail.curLongitude;
+                    curLatitude = mScoreDetail.curLatitude;
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 }
@@ -197,6 +242,8 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             Address address = new StorageUtils<Address>(Address.class, this).getItem();
             if (address != null) {
                 tvLocationContent.setText(address.address);
+                longitude = address.longitude;
+                latitude = address.latitude;
             }
             btnSave.setText(R.string.save);
         } else {
@@ -241,7 +288,57 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             ArmsUtils.startActivity(this, intent);
             return true;
         });
+        tvAddress.setOnLongClickListener(v -> {
+            if (mTaskBaseInfo != null && !TextUtils.isEmpty(mTaskBaseInfo.copyRemark)) {
+                if (UserUtils.getCurrentRole(this).equals("0") || UserUtils.getCurrentRole(this).equals("2")) {
+                    modifyCopyRemark();
+                }
+            }
+            return true;
+        });
 
+        if (mPresenter != null) {
+            mPresenter.startLocation();
+            mPresenter.startLocation();
+        }
+    }
+
+    private void modifyCopyRemark() {
+        remarkCpw = CustomPopupWindow
+                .builder()
+                .parentView(tvAddress)
+                .isWrap(false)
+                .isHeightWrap(false)
+                .contentView(LayoutInflater.from(getBaseContext()).inflate(R.layout.ppw_modify_remark, null))
+                .customListener((contentView, customPopupWindow) -> {
+                    EditText editRemark = contentView.findViewById(R.id.edit_remark);
+                    TextView tvCancel = contentView.findViewById(R.id.tv_cancel);
+                    TextView tvSure = contentView.findViewById(R.id.tv_sure);
+                    if (mTaskBaseInfo != null) {
+                        editRemark.setText(mTaskBaseInfo.copyRemark);
+                    }
+                    tvCancel.setOnClickListener(v -> {
+                        DeviceUtils.hideSoftKeyboard(this, editRemark);
+                        customPopupWindow.dismiss();
+                    });
+                    tvSure.setOnClickListener(v -> {
+                        if (editRemark.isShown()) {
+                            if (editRemark.getText().toString().trim().length() > 0) {
+                                if (mPresenter != null) {
+                                    DeviceUtils.hideSoftKeyboard(this, editRemark);
+                                    mPresenter.updateCopyTaskRemark(taskId, editRemark.getText().toString());
+                                    customPopupWindow.dismiss();
+                                }
+                            } else {
+                                ArmsUtils.snackbarText(getString(R.string.add_address_remark));
+                            }
+                        } else {
+                            editRemark.setVisibility(View.VISIBLE);
+
+                        }
+                    });
+                }).build();
+        remarkCpw.showDown();
     }
 
     //预览图片
@@ -323,9 +420,10 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     public void onSaveStateListener() {
         if (mScoreDetail != null) {
             if (!TextUtils.isEmpty(mScoreDetail.itemName) && !TextUtils.isEmpty(mScoreDetail.standardName) &&
-                    !TextUtils.isEmpty(mScoreDetail.deductName) && !TextUtils.isEmpty(tvLocationContent.getText().toString())
-                    && imageAdapter != null && imageAdapter.getData().size() > 0 && !TextUtils.isEmpty(tvNum.getText().toString())
-                    ) {
+                    !TextUtils.isEmpty(tvDeductContent.getText().toString()) && !TextUtils.isEmpty(tvLocationContent.getText().toString())
+                    // && imageAdapter != null && imageAdapter.getData().size() > 0
+                    && !TextUtils.isEmpty(tvNum.getText().toString())
+            ) {
                 btnSave.setEnabled(true);
                 if (isAdd) {
                     //新增
@@ -383,47 +481,47 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         }
 
         if (!oldScoreDetail.itemId.equals(mScoreDetail.itemId)
-                ) {
+        ) {
             return true;
         }
         if (!oldScoreDetail.itemName.equals(mScoreDetail.itemName)
-                ) {
+        ) {
             return true;
         }
 
         if (!oldScoreDetail.standardId.equals(mScoreDetail.standardId)
-                ) {
+        ) {
             return true;
         }
         if (!oldScoreDetail.standardName.equals(mScoreDetail.standardName)
-                ) {
+        ) {
             return true;
         }
 
         if (!oldScoreDetail.deductId.equals(mScoreDetail.deductId)
-                ) {
+        ) {
             return true;
         }
         if (!oldScoreDetail.deductName.equals(mScoreDetail.deductName)
-                ) {
+        ) {
             return true;
         }
 
         if (!oldScoreDetail.deductNum.equals(mScoreDetail.deductNum)
-                ) {
+        ) {
             return true;
         }
         if (!oldScoreDetail.deductValue.equals(mScoreDetail.deductValue)
-                ) {
+        ) {
             return true;
         }
         if (!oldScoreDetail.deductOnce.equals(mScoreDetail.deductOnce)
-                ) {
+        ) {
             return true;
         }
 
         if (oldScoreDetail.imgList != null && imageAdapter != null && oldScoreDetail.imgList.size() != imageAdapter.getItemCount()
-                ) {
+        ) {
             return true;
         } else {
             if (hasChangeImg) {
@@ -432,11 +530,11 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         }
 
         if (oldScoreDetail.location != null && mScoreDetail.location != null && !oldScoreDetail.location.equals(mScoreDetail.location)
-                ) {
+        ) {
             return true;
         }
         if (!TextUtils.isEmpty(oldScoreDetail.address) && !oldScoreDetail.address.equals(mScoreDetail.address)
-                ) {
+        ) {
             return true;
         }
         //最后比较图片新增再删除未变的情况
@@ -459,10 +557,24 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
 
     }
 
+
+    private boolean hasDeduct;
+
     @Override
     public void showDeduct() {
         //显示扣分标准
+        hasDeduct = true;
         rvDeductScore.performClick();
+    }
+
+    @Override
+    public void disMissRemarkCpw() {
+        if (remarkCpw != null) {
+            remarkCpw.dismiss();
+        }
+        if (mPresenter != null) {
+            mPresenter.getTaskBaseInfo(taskId);
+        }
     }
 
     @Override
@@ -526,6 +638,9 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             loadingDialog.dismiss();
             loadingDialog = null;
         }
+        if (remarkCpw != null) {
+            remarkCpw.dismiss();
+        }
     }
 
     @Override
@@ -546,7 +661,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         finish();
     }
 
-    @OnClick({R.id.img_add_img, R.id.img_right_location, R.id.tv_right_top, R.id.rv_item, R.id.rv_standard, R.id.rv_deduct_score, R.id.img_minus, R.id.img_add, R.id.rv_add_img, R.id.rv_location})
+    @OnClick({R.id.img_right_location_current, R.id.img_add_img, R.id.img_right_location, R.id.tv_right_top, R.id.rv_item, R.id.rv_standard, R.id.rv_deduct_score, R.id.img_minus, R.id.img_add, R.id.rv_add_img, R.id.rv_location})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_right_top:
@@ -651,23 +766,43 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                             lookupDeductList();
                         }
                         //更新一次
-                        if (deductList.size() == 0) {
+                        if (deductList.size() == 0 && !hasDeduct) {
                             if (mPresenter != null) {
                                 mPresenter.getTemplateDetailFromClickDeduct(templateId);
                             }
                         }
                         if (deductList.size() > 0) {
                             //选择考核标准
-                            ShowDeduct.getInstance().ShowDeduct(getActivity(), deductList, tvTitle, deduct -> {
-                                if (mScoreDetail != null) {
-                                    updateDeduct(deduct);
-                                } else {
-                                    showMessage(getString(R.string.error_select_1));
+                            ShowDeduct.getInstance().ShowDeduct(getActivity(), isAdd, mScoreDetail.isMultipleThird, deductList, tvTitle, new ShowDeduct.CallBack() {
+                                @Override
+                                public void updateDeduct(Deduct deduct) {
+                                    if (mScoreDetail != null) {
+                                        updateDeductNow(deduct);
+                                    } else {
+                                        showMessage(getString(R.string.error_select_1));
+                                    }
+
                                 }
+
+                                @Override
+                                public void updateDeductMultiple(List<Deduct> list) {
+                                    if (mScoreDetail != null) {
+                                        updateDeductMultipleNow(list);
+                                    } else {
+                                        showMessage(getString(R.string.error_select_1));
+                                    }
+                                }
+
+                                @Override
+                                public void hideSoftKeyboard() {
+                                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                                    DeviceUtils.hideSoftKeyboard(ScoreItemDetailActivity.this, tvAddress);
+                                }
+
                             });
                         }
                     } else {
-                        if (mPresenter != null) {
+                        if (mPresenter != null && !hasDeduct) {
                             mPresenter.getTemplateDetailFromClickDeduct(templateId);
                         }
                     }
@@ -680,13 +815,89 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 if (mScoreDetail == null) {
                     return;
                 }
-                if (TextUtils.isEmpty(mScoreDetail.deductOnce)) {
+                if (!TextUtils.isEmpty(mScoreDetail.isMultipleThird) && mScoreDetail.isMultipleThird.equals("1")) {
+                    //多选
+                    if (mScoreDetail.deductList == null) {
+                        return;
+                    }
+                    if (mScoreDetail.deductList.size() == 0) {
+                        return;
+                    }
+                    if (deductNum == 0) {
+                        showMessage("不能再少了");
+                    }
+                    deductNum--;
+                    double perValue = 0;
+                    for (Deduct d : mScoreDetail.deductList) {
+                        perValue = Double.valueOf(d.score) + perValue;
+                    }
+                    double value = deductNum * perValue;
+                    if (value >= maxScore) {
+                        showMessage("已达到扣分上限");
+                        value = maxScore;
+                    }
+                    mScoreDetail.deductNum = String.valueOf(deductNum);
+                    mScoreDetail.deductValue = String.valueOf(value);
+                    tvNum.setText(String.valueOf(deductNum));
+                    tvTotalScore.setText(String.format("-%.1f", value));
+
+
+                } else {
+                    if (TextUtils.isEmpty(mScoreDetail.deductOnce)) {
+                        return;
+                    }
+                    if (deductNum == 0) {
+                        showMessage("不能再少了");
+                    } else {
+                        deductNum--;
+                        double value = deductNum * Double.valueOf(mScoreDetail.deductOnce);
+                        if (value >= maxScore) {
+                            showMessage("已达到扣分上限");
+                            value = maxScore;
+                        }
+                        mScoreDetail.deductNum = String.valueOf(deductNum);
+                        mScoreDetail.deductValue = String.valueOf(value);
+                        tvNum.setText(String.valueOf(deductNum));
+                        tvTotalScore.setText(String.format("-%.1f", value));
+                    }
+                }
+
+                break;
+            case R.id.img_add:
+                //扣分处增
+                if (mScoreDetail == null) {
                     return;
                 }
-                if (deductNum == 0) {
-                    showMessage("不能再少了");
+                if (!TextUtils.isEmpty(mScoreDetail.isMultipleThird) && mScoreDetail.isMultipleThird.equals("1")) {
+                    //多选
+                    if (mScoreDetail.deductList == null) {
+                        return;
+                    }
+                    if (mScoreDetail.deductList.size() == 0) {
+                        return;
+                    }
+
+                    deductNum++;
+                    int j = mScoreDetail.deductList.size();
+                    double perValue = 0;
+                    for (Deduct d : mScoreDetail.deductList) {
+                        perValue = Double.valueOf(d.score) + perValue;
+                    }
+                    double value = deductNum * perValue;
+                    if (value >= maxScore) {
+                        showMessage("已达到扣分上限");
+                        value = maxScore;
+                    }
+                    mScoreDetail.deductNum = String.valueOf(deductNum);
+                    mScoreDetail.deductValue = String.valueOf(value);
+                    tvNum.setText(String.valueOf(deductNum));
+                    tvTotalScore.setText(String.format("-%.1f", value));
+
                 } else {
-                    deductNum--;
+                    if (TextUtils.isEmpty(mScoreDetail.deductOnce)) {
+                        return;
+                    }
+                    deductNum++;
                     double value = deductNum * Double.valueOf(mScoreDetail.deductOnce);
                     if (value >= maxScore) {
                         showMessage("已达到扣分上限");
@@ -697,25 +908,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                     tvNum.setText(String.valueOf(deductNum));
                     tvTotalScore.setText(String.format("-%.1f", value));
                 }
-                break;
-            case R.id.img_add:
-                //扣分处增
-                if (mScoreDetail == null) {
-                    return;
-                }
-                if (TextUtils.isEmpty(mScoreDetail.deductOnce)) {
-                    return;
-                }
-                deductNum++;
-                double value = deductNum * Double.valueOf(mScoreDetail.deductOnce);
-                if (value >= maxScore) {
-                    showMessage("已达到扣分上限");
-                    value = maxScore;
-                }
-                mScoreDetail.deductNum = String.valueOf(deductNum);
-                mScoreDetail.deductValue = String.valueOf(value);
-                tvNum.setText(String.valueOf(deductNum));
-                tvTotalScore.setText(String.format("-%.1f", value));
+
                 break;
             case R.id.img_add_img:
                 //添加实地图片
@@ -724,6 +917,14 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 }
                 break;
             case R.id.img_right_location:
+                locationClick = true;
+                if (mPresenter != null) {
+                    mPresenter.startLocation();
+                    mPresenter.startLocation();
+                }
+                break;
+            case R.id.img_right_location_current:
+                locationClick = false;
                 if (mPresenter != null) {
                     mPresenter.startLocation();
                     mPresenter.startLocation();
@@ -734,6 +935,36 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         }
     }
 
+    private void updateDeductMultipleNow(List<Deduct> list) {
+        //多选
+        if (list == null) {
+            showMessage("请选择一条扣分标准");
+            return;
+        }
+        if (mScoreDetail == null) {
+            return;
+        }
+        deductNum = 0;
+        mScoreDetail.deductNum = null;
+        mScoreDetail.deductOnce = null;
+        tvTotalScore.setText(null);
+        tvNum.setText(null);
+        mScoreDetail.deductList = null;
+        mScoreDetail.isMultipleThird = "1";
+        mScoreDetail.deductList = list;
+        mScoreDetail.deductName = null;
+        mScoreDetail.deductOnce = null;
+        String name = "";
+        for (Deduct d : list) {
+            if (TextUtils.isEmpty(name)) {
+                name = d.deductName;
+            } else {
+                name = d.deductName + "、" + name;
+            }
+        }
+        tvDeductContent.setText(name);
+
+    }
 
     private void lookupDeductList() {
         int j = standardList.size();
@@ -767,12 +998,13 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         mScoreDetail.standardName = standard.standardName;
         mScoreDetail.scoreLimit = standard.scoreLimit;
         mScoreDetail.percent = standard.percent;
+        mScoreDetail.isMultipleThird = standard.isMultipleThird;
         setMaxScore(mScoreDetail);
         tvStandardContent.setText(mScoreDetail.standardName);
         //刚好只有一个扣分标准的时候
         if (standard.deductList.size() == 1) {
             lookupDeductList();
-            updateDeduct(standard.deductList.get(0));
+            updateDeductNow(standard.deductList.get(0));
         } else {
             if (hasChanged) {
                 clear3Level();
@@ -781,7 +1013,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     }
 
     //更新扣分标准
-    private void updateDeduct(Deduct deduct) {
+    private void updateDeductNow(Deduct deduct) {
         if (deduct == null) {
             showMessage("请选择一条扣分标准");
             return;
@@ -805,6 +1037,14 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         mScoreDetail.deductName = deduct.deductName;
         mScoreDetail.deductOnce = deduct.score;
         tvDeductContent.setText(mScoreDetail.deductName);
+        if (mScoreDetail.deductList == null) {
+            mScoreDetail.deductList = new ArrayList<>();
+        } else {
+            mScoreDetail.deductList.clear();
+        }
+        mScoreDetail.deductList.add(deduct);
+
+
     }
 
     //设置最大扣分值
@@ -904,9 +1144,31 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     public void updateTaskBaseInfo(TaskBaseInfo info) {
         this.mTaskBaseInfo = info;
         // tvTitle.setText(info.address);
-        tvAddress.setText(info.address);
         tvScore.setText(String.format("-%.1f", Double.valueOf(info.totalScore)));
         tvState.setText(getState(info.complete));
+        if (info != null && TextUtils.isEmpty(info.copyRemark)) {
+            info.copyRemark = "";
+        }
+        if (info != null && TextUtils.isEmpty(info.copyLocation)) {
+            info.copyLocation = "";
+        }
+        String other = info.copyRemark + "" + info.copyLocation;
+        if (!TextUtils.isEmpty(other)) {
+            tvAddress.setText(createTextStyle(info.address, other));
+        } else {
+            tvAddress.setText(info.address);
+        }
+
+    }
+
+    private SpannableStringBuilder createTextStyle(String address, String other) {
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder(address + other);
+        ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#999999"));
+        ssb.setSpan(colorSpan, address.length(), ssb.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        return ssb;
+
     }
 
     @Override
@@ -931,6 +1193,7 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 .imageSpanCount(3)
                 .compress(true)
                 .minimumCompressSize(2048) //小于2M的不压缩
+                .maxSelectNum(Integer.MAX_VALUE)
                 .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
@@ -973,6 +1236,34 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             tvLocationContent.setText(data.address);
         }
 
+        //首查/复查
+        if (!TextUtils.isEmpty(data.checkStatus)) {
+            switch (data.checkStatus) {
+                case "0":
+                    //首查
+                    rvCheck.setVisibility(View.GONE);
+                    break;
+                case "1":
+                    //复查
+                    rvCheck.setVisibility(View.VISIBLE);
+                    break;
+                case "2":
+                    //复查-已整改
+                    rvCheck.setVisibility(View.VISIBLE);
+                    swCheck.setChecked(true);
+                    break;
+                case "3":
+                    rvCheck.setVisibility(View.VISIBLE);
+                    swCheck.setChecked(false);
+                    //复查-未整改
+                    break;
+                default:
+                    break;
+            }
+
+
+        }
+
 
     }
 
@@ -998,6 +1289,37 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
     //保存
     @OnClick(R.id.btn_save)
     public void onClick() {
+        if (imageAdapter != null && imageAdapter.getData().size() > 0) {
+            showSurePPW();
+        } else {
+            save();
+        }
+
+    }
+
+    private void showSurePPW() {
+        saveSureCpw = CustomPopupWindow
+                .builder()
+                .parentView(tvAddress)
+                .isWrap(false)
+                .isHeightWrap(false)
+                .contentView(LayoutInflater.from(getBaseContext()).inflate(R.layout.ppw_sure_commit, null))
+                .customListener((contentView, customPopupWindow) -> {
+                    TextView tvCancel = contentView.findViewById(R.id.tv_cancel);
+                    TextView tvSure = contentView.findViewById(R.id.tv_sure);
+                    tvCancel.setOnClickListener(v -> {
+                        customPopupWindow.dismiss();
+                    });
+                    tvSure.setOnClickListener(v -> {
+                        save();
+                        customPopupWindow.dismiss();
+                    });
+                }).build();
+        saveSureCpw.showDown();
+    }
+
+
+    private void save() {
 
         if (isAdd) {
             //新增
@@ -1005,8 +1327,18 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
                 return;
             }
             if (mPresenter != null) {
-                mPresenter.submitScore(taskId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location);
+//                mPresenter.submitScore(taskId, mScoreDetail.itemId, mScoreDetail.standardId,
+//                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location)
+                if ((TextUtils.isEmpty(mScoreDetail.longitude) || "0".equals(mScoreDetail.longitude) && !TextUtils.isEmpty(longitude))) {
+                    mScoreDetail.longitude = longitude;
+                }
+                if ((TextUtils.isEmpty(mScoreDetail.latitude) || "0".equals(mScoreDetail.latitude) && !TextUtils.isEmpty(latitude))) {
+                    mScoreDetail.latitude = latitude;
+                }
+                mPresenter.submitScoreByMultiple(taskId, mScoreDetail.itemId, mScoreDetail.standardId, mScoreDetail.deductList, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(),
+                        mScoreDetail.location, mScoreDetail.longitude, mScoreDetail.latitude,
+                tvLocationContentCurrent.getText().toString(),mScoreDetail.curLongitude,mScoreDetail.curLatitude
+                );
             }
         } else {
             //修改
@@ -1015,7 +1347,18 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
             }
             if (mPresenter != null) {
                 mPresenter.updateScoreDetail(taskId, scoreId, mScoreDetail.itemId, mScoreDetail.standardId,
-                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location);
+                        mScoreDetail.deductId, tvNum.getText().toString(), imageAdapter.getData(), tvLocationContent.getText().toString(), mScoreDetail.location, mScoreDetail.longitude, mScoreDetail.latitude,
+
+                        tvLocationContentCurrent.getText().toString(),mScoreDetail.curLongitude,mScoreDetail.curLatitude
+                );
+
+                //   mPresenter.updateScoreByMultiple(taskId,scoreId,mScoreDetail.itemId,mScoreDetail.standardId,mScoreDetail.deductList,tvNum.getText().toString(),imageAdapter.getData(),tvLocationContent.getText().toString(),mScoreDetail.location);
+
+                //更新检查状态
+                if (rvCheck.isShown() && !TextUtils.isEmpty(scoreId)) {
+                    mPresenter.updateCheckState(scoreId, swCheck.isChecked() ? "2" : "3");
+                }
+
             }
         }
     }
@@ -1064,5 +1407,13 @@ public class ScoreItemDetailActivity extends BaseActivity<ScoreItemDetailPresent
         return state;
 
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
+
 
 }

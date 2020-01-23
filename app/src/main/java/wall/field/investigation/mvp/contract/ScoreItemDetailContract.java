@@ -8,9 +8,11 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 import io.reactivex.Observable;
 import wall.field.investigation.mvp.model.entity.BaseJson;
+import wall.field.investigation.mvp.model.entity.Deduct;
 import wall.field.investigation.mvp.model.entity.LocalImage;
 import wall.field.investigation.mvp.model.entity.ScoreDetail;
 import wall.field.investigation.mvp.model.entity.ScoreItem;
@@ -38,6 +40,8 @@ public interface ScoreItemDetailContract {
         void onSaveStateListener();
 
         void showDeduct();
+
+        void disMissRemarkCpw();
     }
 
     //Model层定义接口,外部只需关心Model返回的数据,无需关心内部细节,即是否使用缓存
@@ -57,8 +61,16 @@ public interface ScoreItemDetailContract {
 
         Observable<BaseJson<Object>> submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
 
-        Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location);
+        Observable<BaseJson<Object>> updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location,String longitude,String latitude,String curLocation,String curLongitude,String curLatitude);
 
-        void saveAddress(String address, String location);
+        void saveAddress(String address, String location,String longitude,String latitude);
+
+        Observable<BaseJson<Object>> updateCheckStatus(String scoreId, String checkStatus);
+
+        Observable<BaseJson<Object>> updateCopyTaskRemark(String taskId, String copyRemark);
+
+        Observable<BaseJson<Object>> submitScoreByMultiple(String taskId, String itemId, String standardId, List<Deduct> deductList, String deductNum, List<LocalImage> data, String address, String location,String longitude,String latitude,String curLocation,String curLongitude,String curLatitude);
+
+        Observable<BaseJson<Object>> updateScoreByMultiple(String taskId, String scoreId,String itemId, String standardId, List<Deduct> deductList, String deductNum, List<LocalImage> data, String address, String location);
     }
 }

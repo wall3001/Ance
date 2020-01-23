@@ -3,6 +3,7 @@ package wall.field.investigation.mvp.presenter;
 import android.app.Application;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.util.Log;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.jess.arms.integration.AppManager;
@@ -69,16 +70,20 @@ public class ScoreListPresenter extends BasePresenter<ScoreListContract.Model, S
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onCreate() {
-
     }
 
+    /**
+     * @param refresh
+     * @param taskId
+     */
     public void requestScoreList(boolean refresh, String taskId) {
         if (refresh) {
             page = 1;
+            adapter.setEnableLoadMore(false);
         }
         mModel.getScoreList(taskId, page, pageNum)
                 .subscribeOn(Schedulers.io())
-                .retryWhen(new RetryWithDelay(3, 2))
+               // .retryWhen(new RetryWithDelay(3, 2))
                 .doOnSubscribe(disposable -> {
                     if (refresh) {
                         mRootView.showLoading();
@@ -96,6 +101,9 @@ public class ScoreListPresenter extends BasePresenter<ScoreListContract.Model, S
                 })
                 .compose(RxLifecycleUtils.bindToLifecycle(mRootView))
                 .subscribe(new ErrorHandleSubscriber<BaseJson<List<ScoreItem>>>(mErrorHandler) {
+                    /**
+                     * @param listBaseJson
+                     */
                     @Override
                     public void onNext(BaseJson<List<ScoreItem>> listBaseJson) {
                         if (listBaseJson.isSuccess()) {
@@ -105,34 +113,16 @@ public class ScoreListPresenter extends BasePresenter<ScoreListContract.Model, S
                                 adapter.addData(listBaseJson.getData());
                             }
                             if (listBaseJson.getData().size() < pageNum) {
-                                if(adapter.getData().size()<pageNum){
-                                    adapter.loadMoreEnd(true);
-                                }else{
-                                    adapter.loadMoreEnd();
-                                }
-                            } else {
-                                page++;
+                                //加载结束
+                                adapter.setEnableLoadMore(false);
+                                adapter.loadMoreEnd();
                             }
+                            page++;
                         }
                     }
                 });
-       // createData();
-
     }
 
-    private void createData() {
-        List<ScoreItem> list = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            ScoreItem item = new ScoreItem();
-            item.scoreId = i + "";
-            item.scoreState = i % 3 + "";
-            item.scoreSummary = "总结概要来看看dddd" + i;
-            item.scoreName = "评分记录项" + i;
-            item.scoreValue = i * 3 + 1 + "";
-            list.add(item);
-        }
-        adapter.addData(list);
-    }
 
     public void getTaskBaseInfo(String taskID) {
 
@@ -169,6 +159,20 @@ public class ScoreListPresenter extends BasePresenter<ScoreListContract.Model, S
                         } else {
                             mRootView.showMessage("删除失败");
                         }
+                    }
+                });
+    }
+
+    public void updateCopyTaskRemark(String taskId, String copyRemark) {
+        mModel.updateCopyTaskRemark(taskId,copyRemark)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<Object> objectBaseJson) {
+                        if(objectBaseJson.isSuccess()){
+                            mRootView.disMissRemarkCpw();
+                        }
+                        mRootView.showMessage(objectBaseJson.getMsg());
                     }
                 });
     }

@@ -15,4 +15,7 @@ public class Task {
     public String complete;
     public String scoreNum;
     public String totalScore;
+    public String mainType;
+    public String copyRemark;
+    public String copyLocation;
 }

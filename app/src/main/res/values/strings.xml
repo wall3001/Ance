@@ -24,12 +24,12 @@
     <string name="pwd_not_same">两次输入的新密码不相同</string>
     <string name="old_pwd_not_null">原密码不能为空</string>
     <string name="save_success">保存成功</string>
-    <string name="civilization_creation">文明创建</string>
+    <string name="civilization_creation">实地调研</string>
     <string name="all">全部</string>
     <string name="un_start">未开始</string>
     <string name="doing">进行中</string>
     <string name="has_complete">已完成</string>
-    <string name="subject_msg">主体信息(文明创建)</string>
+    <string name="subject_msg">主体信息(实地调研)</string>
     <string name="deduct_remarks">累计扣分</string>
     <string name="exitapp">再按一次退出应用</string>
     <string name="score_empty_tips">暂无评分项纪录</string>
@@ -67,4 +67,15 @@
     <string name="loading">正在加载中...</string>
     <string name="score_record_item">评分记录项录入</string>
     <string name="current_version">当前版本</string>
+    <string name="re_check">复查</string>
+    <string name="copy_now">立即复制</string>
+    <string name="hint_copy_task_remark">请录入备注信息</string>
+    <string name="copy_task_title">确定要复制该主体/任务?</string>
+    <string name="add_address_remark">请添加备注/地址信息</string>
+    <string name="hint_copy_task_address">请输入详细地址信息</string>
+    <string name="modify_remark">修改备注信息</string>
+    <string name="modify_now">立即修改</string>
+    <string name="input_deduct_standard">输入扣分标准</string>
+    <string name="input_deduct_score">输入扣分分值</string>
+    <string name="location_current">当前位置信息</string>
 </resources>

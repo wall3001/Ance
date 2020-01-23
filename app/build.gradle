@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+
+    compileSdkVersion 28
     useLibrary 'org.apache.http.legacy'
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -9,13 +10,13 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('E:/Application/Ance/app/src/ance.jks')
+            storeFile file('E:\\app\\Ance\\app\\ance.jks')
             storePassword "yy3001ll"
             keyAlias "ance"
             keyPassword "yy3001ll"
         }
         debug {
-            storeFile file('E:/Application/Ance/app/src/ance.jks')
+            storeFile file('E:\\app\\Ance\\app\\ance.jks')
             storePassword "yy3001ll"
             keyAlias "ance"
             keyPassword "yy3001ll"
@@ -49,9 +50,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
         disable "ResourceType"
+        checkReleaseBuilds false
         abortOnError false
     }
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
     productFlavors {
     }
 }

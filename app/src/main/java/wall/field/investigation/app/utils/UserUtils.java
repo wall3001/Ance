@@ -55,9 +55,20 @@ public class UserUtils {
 
     }
 
+    public static String getCurrentRole(Context context) {
+        User user = new StorageUtils<User>(User.class, context).getItem();
+        if (user != null && user.role != null) {
+            return user.role;
+        }
+        return "";
+
+    }
+
     public static void updatePortrait(String data, Context context) {
         User user = new StorageUtils<User>(User.class, context).getItem();
         user.portraitUrl = data;
         new StorageUtils<User>(User.class, context).save(user);
     }
+
+
 }

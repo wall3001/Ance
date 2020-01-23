@@ -34,7 +34,15 @@ public interface Api {
 
     // String APP_DOMAIN = "http://172.17.13.68";
    //  String APP_DOMAIN = "http://192.168.1.3:80/";
-    String APP_DOMAIN = "http://120.76.123.164:8080/";
+   // String APP_DOMAIN = "http://120.76.123.164:8080/";
+//test
+    //String APP_DOMAIN = "http://120.76.123.164:8081/";
+
+    //test 2
+  //  String APP_DOMAIN = "http://47.92.237.123:8003/";
+
+    //release
+    String APP_DOMAIN = "http://47.92.237.123:8081/";
 
     String RequestSuccess = "1";
 
@@ -57,7 +65,7 @@ public interface Api {
     //获取任务清单
     @FormUrlEncoded
     @POST("task/taskList")
-    Observable<BaseJson<List<Task>>> getTaskList(@Field("uid") String currentUid, @Field("token") String currentToken, @Field("pageNum") int pageNum, @Field("page") int page, @Field("complete") int complete);
+    Observable<BaseJson<List<Task>>> getTaskList(@Field("uid") String currentUid, @Field("token") String currentToken, @Field("pageNum") int pageNum, @Field("page") int page, @Field("complete") int complete,@Field("orderType")int orderType,@Field("taskName")String taskName);
 
 
     @FormUrlEncoded
@@ -82,7 +90,7 @@ public interface Api {
 
     @FormUrlEncoded
     @POST("task/getScoreDetail")
-    Observable<BaseJson<ScoreDetail>> getScoreDeatail(@Field("uid") String currentUid, @Field("token") String currentToken, @Field("taskId") String taskId, @Field("scoreId") String scoreId);
+    Observable<BaseJson<ScoreDetail>> getScoreDetail(@Field("uid") String currentUid, @Field("token") String currentToken, @Field("taskId") String taskId, @Field("scoreId") String scoreId);
 
     @FormUrlEncoded
     @POST("task/getTemplateDetail")
@@ -95,4 +103,30 @@ public interface Api {
     @Multipart
     @POST("task/updateScoreDetail")
     Observable<BaseJson<Object>> updateScoreDetail(@PartMap Map<String, RequestBody> bodyMap);
+
+
+    /**
+     *  二期新增接口
+     */
+    @FormUrlEncoded
+    @POST("task/updateCheckState")
+    Observable<BaseJson<Object>> updateCheckState(@Field("uid") String currentUid, @Field("token") String currentToken,@Field("scoreId")String scoredId,@Field("checkStatus")String checkStatus);
+
+
+    @FormUrlEncoded
+    @POST("task/copyTaskAndMain")
+    Observable<BaseJson<Object>> copyTaskAndMain(@Field("uid") String currentUid, @Field("token") String currentToken,@Field("taskId")String taskId,@Field("copyRemark")String copyRemark,@Field("copyLocation")String copyLocation);
+
+    @FormUrlEncoded
+    @POST("task/updateCopyTaskRemark")
+    Observable<BaseJson<Object>> updateCopyTaskRemark(@Field("uid") String currentUid, @Field("token") String currentToken,@Field("taskId")String taskId,@Field("copyRemark")String copyRemark);
+
+
+    @Multipart
+    @POST("task/submitScoreByMultiple")
+    Observable<BaseJson<Object>> submitScoreByMultiple(@PartMap Map<String, RequestBody> bodyMap);
+
+    @Multipart
+    @POST("task/updateScoreByMultiple")
+    Observable<BaseJson<Object>> updateScoreByMultiple(LinkedHashMap<String,RequestBody> bodyMap);
 }

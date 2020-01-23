@@ -22,9 +22,12 @@
         android:text="@string/task_list"
         android:textSize="@dimen/sp_18"
         android:gravity="center"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:singleLine="true"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <TextView

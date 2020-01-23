@@ -1,57 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/bg_gray"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:background="@color/bg_gray_80">
 
-    <TextView
-        android:id="@+id/tv_all"
-        style="@style/filter"
-        android:text="@string/all"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <View
-        android:id="@+id/divider1"
-        android:background="@color/divider_task_list"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1px"/>
-    <TextView
-        android:id="@+id/tv_unStart"
-        style="@style/filter"
-        android:text="@string/un_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    <View
-        android:id="@+id/divider2"
-        android:background="@color/divider_task_list"
-        android:layout_width="match_parent"
-        android:layout_height="1px"/>
-    <TextView
-        android:id="@+id/tv_doing"
-        style="@style/filter"
-        android:text="@string/doing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="取消"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/sp_18" />
 
-    <View
-        android:id="@+id/divider3"
-        android:background="@color/divider_task_list"
-        android:layout_width="match_parent"
-        android:layout_height="1px"/>
-    <TextView
-        android:id="@+id/tv_complete"
-        style="@style/filter"
-        android:text="@string/has_complete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_task_list" />
 
-    <View
-        android:id="@+id/divider4"
-        android:background="@color/divider_task_list"
-        android:layout_width="match_parent"
-        android:layout_height="1px"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="任务名称"
+            android:textColor="@color/txt_main"
+            android:textSize="@dimen/sp_16" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入任务名称"
+            android:padding="10dp" />
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_task_list" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="任务完成状态"
+            android:textColor="@color/txt_main"
+            android:textSize="@dimen/sp_16" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_all"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/all" />
+
+
+            <TextView
+                android:id="@+id/tv_unStart"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/un_start" />
+
+
+            <TextView
+                android:id="@+id/tv_doing"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/doing" />
+
+
+            <TextView
+                android:id="@+id/tv_complete"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/has_complete" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider_task_list" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="排序方式"
+            android:textColor="@color/txt_main"
+            android:textSize="@dimen/sp_16" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_near"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="由近及远" />
+
+
+            <TextView
+                android:id="@+id/tv_far"
+                style="@style/filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="由远及近" />
+
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="20dp"
+            android:background="@color/divider_task_list" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_reset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="重置"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/sp_18" />
+
+            <TextView
+                android:id="@+id/tv_sure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorAccent"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="确认"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_18" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</RelativeLayout>

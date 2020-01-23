@@ -20,21 +20,24 @@ import wall.field.investigation.mvp.model.entity.Standard;
 public class DeductAdapter extends BaseQuickAdapter<Deduct,BaseViewHolder> {
 
 
-    public Deduct getmDeduct() {
+    public Deduct getDeduct() {
         return mDeduct;
     }
 
-    public void setmDeduct(Deduct mDeduct) {
+    public void setDeduct(Deduct mDeduct) {
         this.mDeduct = mDeduct;
     }
 
     private Deduct mDeduct;
 
 
-    public DeductAdapter(@Nullable List<Deduct> data) {
+    public DeductAdapter(@Nullable List<Deduct> data,String isMultipleThird) {
         super(R.layout.item_item, data);
         if (data != null) {
             int j = data.size();
+            if(!TextUtils.isEmpty(isMultipleThird)&&isMultipleThird.equals("1")){
+
+            }
             for (int i = 0; i < j; i++) {
                 if (data.get(i).isSelect) {
                     mDeduct = data.get(i);

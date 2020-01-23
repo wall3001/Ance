@@ -207,9 +207,11 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
                 .subscribe(new ErrorHandleSubscriber<BaseJson<List<TemplateDetail>>>(mErrorHandler) {
                     @Override
                     public void onNext(BaseJson<List<TemplateDetail>> listBaseJson) {
-                        if (listBaseJson.isSuccess() && listBaseJson.getData() != null && listBaseJson.getData().size() > 0) {
-                            mModel.saveTemplate(listBaseJson.getData());
+                        if (listBaseJson.isSuccess()) {
                             mRootView.showDeduct();
+                            if (listBaseJson.getData() != null && listBaseJson.getData().size() > 0) {
+                                mModel.saveTemplate(listBaseJson.getData());
+                            }
                         }
                     }
                 });
@@ -247,20 +249,20 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
     }
 
     //新增
-    public void submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address,String location) {
+    public void submitScore(String taskId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address, String location) {
         if (TextUtils.isEmpty(taskId)) {
             return;
         }
-        mModel.submitScore(taskId,itemId,standardId,deductId,deductNum,data,address,location)
+        mModel.submitScore(taskId, itemId, standardId, deductId, deductNum, data, address, location)
                 .compose(RxUtils.applySchedulers(mRootView))
                 .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
                     @Override
                     public void onNext(BaseJson<Object> objectBaseJson) {
-                        if(objectBaseJson.isSuccess()){
+                        if (objectBaseJson.isSuccess()) {
                             mRootView.showMessage(mApplication.getString(R.string.save_success));
-                            mModel.saveAddress(address,location);
+                            mModel.saveAddress(address, location,"0","0");
                             mRootView.killMyself();
-                          }else{
+                        } else {
                             mRootView.showMessage(objectBaseJson.getMsg());
                         }
                     }
@@ -268,24 +270,91 @@ public class ScoreItemDetailPresenter extends BasePresenter<ScoreItemDetailContr
     }
 
     //修改
-    public void updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data,String address, String location) {
+    public void updateScoreDetail(String taskId, String scoreId, String itemId, String standardId, String deductId, String deductNum, List<LocalImage> data, String address, String location,String longitude,String latitude,String curLocation,String curLongitude,String curLatitude) {
         if (TextUtils.isEmpty(taskId) || TextUtils.isEmpty(scoreId)) {
             return;
         }
-        mModel.updateScoreDetail(taskId,scoreId,itemId,standardId,deductId,deductNum,data,address,location)
+        mModel.updateScoreDetail(taskId, scoreId, itemId, standardId, deductId, deductNum, data, address, location,longitude,latitude,curLocation,curLongitude,curLatitude)
                 .compose(RxUtils.applySchedulers(mRootView))
                 .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
                     @Override
                     public void onNext(BaseJson<Object> objectBaseJson) {
-                        if(objectBaseJson.isSuccess()){
+                        if (objectBaseJson.isSuccess()) {
                             mRootView.showMessage(mApplication.getString(R.string.save_success));
+                            mModel.saveAddress(address, location,longitude,latitude);
                             mRootView.killMyself();
-                        }else{
+                        } else {
                             mRootView.showMessage(objectBaseJson.getMsg());
                         }
                     }
                 });
 
 
+    }
+
+    public void updateCheckState(String scoreId, String checkStatus) {
+        mModel.updateCheckStatus(scoreId,checkStatus)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<Object> objectBaseJson) {
+
+                    }
+                });
+    }
+
+    public void updateCopyTaskRemark(String taskId,  String copyRemark) {
+        mModel.updateCopyTaskRemark(taskId,copyRemark)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<Object> objectBaseJson) {
+                        if(objectBaseJson.isSuccess()){
+                            mRootView.disMissRemarkCpw();
+                        }
+                        mRootView.showMessage(objectBaseJson.getMsg());
+                    }
+                });
+    }
+
+    public void submitScoreByMultiple(String taskId, String itemId, String standardId, List<Deduct> deductList, String deductNum, List<LocalImage> data, String address, String location,String longitude,String latitude,String curLocation,String curLongitude,String curLatitude) {
+
+        if (TextUtils.isEmpty(taskId) || TextUtils.isEmpty(itemId)) {
+            return;
+        }
+        mModel.submitScoreByMultiple(taskId, itemId, standardId, deductList, deductNum, data, address, location,longitude,latitude,curLocation,curLongitude,curLatitude)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<Object> objectBaseJson) {
+                        if (objectBaseJson.isSuccess()) {
+                            mRootView.showMessage(mApplication.getString(R.string.save_success));
+                            mModel.saveAddress(address, location,longitude,latitude);
+                            mRootView.killMyself();
+                        } else {
+                            mRootView.showMessage(objectBaseJson.getMsg());
+                        }
+                    }
+                });
+
+    }
+
+    public void updateScoreByMultiple(String taskId, String scoreId, String itemId, String standardId, List<Deduct> deductList, String deductNum, List<LocalImage> data, String address, String location) {
+        if (TextUtils.isEmpty(taskId) || TextUtils.isEmpty(scoreId)) {
+            return;
+        }
+        mModel.updateScoreByMultiple(taskId, scoreId, itemId, standardId, deductList, deductNum, data, address, location)
+                .compose(RxUtils.applySchedulers(mRootView))
+                .subscribe(new ErrorHandleSubscriber<BaseJson<Object>>(mErrorHandler) {
+                    @Override
+                    public void onNext(BaseJson<Object> objectBaseJson) {
+                        if (objectBaseJson.isSuccess()) {
+                            mRootView.showMessage(mApplication.getString(R.string.save_success));
+                            mRootView.killMyself();
+                        } else {
+                            mRootView.showMessage(objectBaseJson.getMsg());
+                        }
+                    }
+                });
     }
 }

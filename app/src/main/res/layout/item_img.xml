@@ -19,6 +19,6 @@
         android:paddingLeft="10dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_delete"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>

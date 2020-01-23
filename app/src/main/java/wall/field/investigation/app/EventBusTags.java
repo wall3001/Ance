@@ -28,4 +28,5 @@ public interface EventBusTags {
     String ADDRESS ="ADDRESS";
 
     String SAVEUSER = "SAVEUSER";
+
 }

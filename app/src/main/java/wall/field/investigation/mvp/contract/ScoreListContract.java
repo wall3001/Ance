@@ -10,6 +10,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import wall.field.investigation.mvp.model.entity.BaseJson;
 import wall.field.investigation.mvp.model.entity.ScoreItem;
@@ -25,6 +26,8 @@ public interface ScoreListContract {
         void endLoadMore();
         Activity getActivity();
         RecyclerView getRecyclerView();
+
+        void disMissRemarkCpw();
         //申请权限
      //   RxPermissions getRxPermissions();
 
@@ -39,5 +42,7 @@ public interface ScoreListContract {
 
 
         Observable<BaseJson<Object>> deleteScoreItem(String taskId, String scoreId);
+
+        Observable<BaseJson<Object>> updateCopyTaskRemark(String taskId, String copyRemark);
     }
 }

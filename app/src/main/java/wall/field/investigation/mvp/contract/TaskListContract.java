@@ -24,11 +24,15 @@ public interface TaskListContract {
         RecyclerView getRecylerView();
         //申请权限
         RxPermissions getRxPermissions();
+
+        void disMissCopyCpw();
     }
 
     //Model层定义接口,外部只需关心Model返回的数据,无需关心内部细节,即是否使用缓存
     interface Model extends IModel {
 
-        Observable<BaseJson<List<Task>>> requestTaskList(boolean pullToRefresh,int pageNum,int page,int complete);
+        Observable<BaseJson<List<Task>>> requestTaskList(boolean pullToRefresh,int pageNum,int page,int complete,int orderType,String taskName);
+
+        Observable<BaseJson<Object>> copyTaskAndMain(String taskId, String copyRemark, String copyLocation);
     }
 }
